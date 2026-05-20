@@ -37,6 +37,9 @@
   "pnpm": {
     "ignoredBuiltDependencies": [
       "unrs-resolver"
+    ],
+    "onlyBuiltDependencies": [
+      "unrs-resolver"
     ]
   }
 }
