@@ -24,12 +24,6 @@ function makeScreenTexture(content: MonitorContent): THREE.CanvasTexture {
   ctx.fillStyle = "#000000";
   ctx.fillRect(0, 0, w, h);
 
-  // scanlines
-  ctx.fillStyle = "rgba(255,255,255,0.025)";
-  for (let y = 0; y < h; y += 3) {
-    ctx.fillRect(0, y, w, 1);
-  }
-
   // title bar
   const pad = 14;
   ctx.fillStyle = "rgba(99,102,241,0.22)";
@@ -56,6 +50,14 @@ function makeScreenTexture(content: MonitorContent): THREE.CanvasTexture {
     ctx.fillText(line.text, pad + 14, y);
     y += 22;
     if (y > h - pad - 16) break;
+  }
+
+  // CRT scanlines — drawn last so they darken text + bg uniformly.
+  // 1px dark line every 3px at ~8% opacity reads as period authenticity
+  // without crushing legibility.
+  ctx.fillStyle = "rgba(0,0,0,0.08)";
+  for (let y = 0; y < h; y += 3) {
+    ctx.fillRect(0, y, w, 1);
   }
 
   // inner vignette
