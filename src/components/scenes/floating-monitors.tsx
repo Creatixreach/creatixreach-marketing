@@ -8,6 +8,7 @@ import { DeskAndFloor } from "@/components/scenes/three/desk-and-floor";
 import { CodeAtmosphere } from "@/components/scenes/three/code-atmosphere";
 import { SceneLighting } from "@/components/scenes/three/scene-lighting";
 import { SceneEnvironment } from "@/components/scenes/three/scene-environment";
+import { useDeviceTier } from "@/lib/device-tier";
 
 const MONITORS: MonitorContent[] = [
   {
@@ -119,7 +120,7 @@ function CameraRig() {
   return null;
 }
 
-function MonitorsScene() {
+function MonitorsScene({ effectsEnabled }: { effectsEnabled: boolean }) {
   return (
     <>
       {/* Brand-navy fog so distant geometry dissolves into the room */}
@@ -156,7 +157,7 @@ function MonitorsScene() {
         floatPhase={3.2}
       />
 
-      <SceneEnvironment />
+      <SceneEnvironment enabled={effectsEnabled} />
     </>
   );
 }
@@ -166,7 +167,12 @@ export function FloatingMonitors({ className }: { className?: string }) {
   // get the static fallback rendered by the parent instead of this component.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  const tier = useDeviceTier();
   if (!mounted) return null;
+
+  // Disable HDR Environment + post-processing on low-tier (also caught by
+  // prefers-reduced-motion via useDeviceTier).
+  const effectsEnabled = tier === "high";
 
   return (
     <div className={className} aria-hidden="true">
@@ -175,7 +181,7 @@ export function FloatingMonitors({ className }: { className?: string }) {
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         dpr={[1, 2]}
       >
-        <MonitorsScene />
+        <MonitorsScene effectsEnabled={effectsEnabled} />
       </Canvas>
     </div>
   );
