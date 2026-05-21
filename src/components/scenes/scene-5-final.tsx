@@ -90,7 +90,7 @@ export function Scene5Final() {
   }, []);
 
   return (
-    <section className="relative h-full w-full overflow-hidden bg-[#040414] text-brand-text-dark">
+    <section className="relative min-h-screen w-full overflow-hidden bg-[#040414] text-brand-text-dark md:h-full md:min-h-0">
       {/* 3D backdrop — fixed behind the scrollable foreground */}
       <div className="pointer-events-none absolute inset-0 z-0">
         {reduced ? (
@@ -105,11 +105,11 @@ export function Scene5Final() {
         className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_center,rgba(124,131,255,0.06)_0%,rgba(4,4,20,0.7)_55%,rgba(4,4,20,0.97)_100%)]"
       />
 
-      {/* Scrollable foreground container — scroll inside the scene without
-       *  triggering scene navigation (data-scene-no-nav). */}
+      {/* Scrollable foreground container — on desktop scrolls inside the
+       *  scene without triggering scene nav; on mobile flows with the page. */}
       <div
         data-scene-no-nav
-        className="relative z-20 h-full w-full overflow-y-auto"
+        className="relative z-20 w-full md:h-full md:overflow-y-auto"
         style={{ overscrollBehavior: "contain" }}
       >
         <div className="mx-auto flex min-h-full w-full max-w-5xl flex-col px-6 pb-40 pt-24 sm:px-10 sm:pt-28">

@@ -57,7 +57,7 @@ export function Scene0Hero() {
   }, []);
 
   return (
-    <section className="relative h-full w-full overflow-hidden bg-brand-navy text-brand-text-dark">
+    <section className="relative min-h-screen w-full overflow-hidden bg-brand-navy text-brand-text-dark md:h-full md:min-h-0">
       {/* 3D scene: dim coding room — fills the entire hero. */}
       <div className="pointer-events-none absolute inset-0 z-0">
         {reduced ? (
@@ -142,6 +142,7 @@ export function Scene0Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 1.25, ease: "easeOut" }}
+            className="mt-5 hidden md:block"
           >
             <SceneNavHint />
           </motion.div>

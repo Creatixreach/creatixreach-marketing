@@ -5,6 +5,7 @@ import { Volume2, VolumeX } from "lucide-react";
 import { Logo } from "@/components/branding/logo";
 import { WhatsappButton } from "@/components/ui/whatsapp-button";
 import { useScene } from "@/components/scenes/scene-controller";
+import { SceneNavHint } from "@/components/scenes/scene-nav-hint";
 import { isMuted, toggleMuted } from "@/lib/audio";
 import { whatsappUrl, type CtaTopic } from "@/lib/cta-messages";
 import { cn } from "@/lib/utils";
@@ -70,17 +71,24 @@ export function SiteChrome() {
         </div>
       </div>
 
-      {/* Bottom-center: scene index + progress dots.
-       *  The "Use arrow keys to navigate" hint moved into each scene's copy
-       *  panel as a dual-axis (← → and ↑ ↓) caption in Phase 6. */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-6 z-40 flex flex-col items-center gap-3">
+      {/* Bottom-center: scene index + progress dots. On mobile a subtle
+       *  blurred bg keeps it readable as the page scrolls; on desktop it's
+       *  a transparent overlay over the fixed scene. The dual-axis nav hint
+       *  lives in the copy panel on desktop and here on mobile so it stays
+       *  visible while the user scrolls within a scene. */}
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex flex-col items-center gap-2 bg-gradient-to-t from-brand-navy/85 via-brand-navy/55 to-transparent px-4 pb-5 pt-6 backdrop-blur-sm md:bg-none md:px-0 md:pb-6 md:pt-0 md:backdrop-blur-0">
         <div className="pointer-events-auto text-xs uppercase tracking-[0.3em] text-brand-muted-dark">
           <span className="text-white">{formatIndex(currentScene + 1)}</span>
           <span className="mx-2 text-white/40">/</span>
           <span>{formatIndex(totalScenes)}</span>
         </div>
 
-        {/* Progress dots — active scene is a wider pill (16x4), others 4x4 round */}
+        {/* Mobile-only nav hint — stays visible while the page scrolls */}
+        <div className="pointer-events-auto md:hidden">
+          <SceneNavHint />
+        </div>
+
+        {/* Progress dots — active scene is a wider pill, others round */}
         <div className="pointer-events-auto flex items-center gap-2">
           {Array.from({ length: totalScenes }).map((_, i) => {
             const active = i === currentScene;

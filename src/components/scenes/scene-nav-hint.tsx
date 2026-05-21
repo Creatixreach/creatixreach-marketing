@@ -32,7 +32,7 @@ export function SceneNavHint({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "mt-5 inline-flex flex-wrap items-center gap-y-1 text-[10px] font-medium uppercase tracking-[0.2em] text-brand-muted-dark",
+        "inline-flex flex-wrap items-center gap-y-1 text-[10px] font-medium uppercase tracking-[0.2em] text-brand-muted-dark",
         className
       )}
     >

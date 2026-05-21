@@ -18,7 +18,7 @@ export default function HomePage() {
   useEffect(() => setReady(true), []);
 
   return (
-    <main className="relative h-screen w-screen overflow-hidden bg-brand-navy text-brand-text-dark">
+    <main className="relative w-screen bg-brand-navy text-brand-text-dark md:h-screen md:overflow-hidden">
       {!ready && <InitialLoader />}
       <SceneController>
         <SceneStage />

@@ -50,8 +50,9 @@ export function Scene1WebSocial() {
   }, []);
 
   return (
-    <section className="relative h-full w-full overflow-hidden bg-[#0a0814] text-brand-text-dark">
-      <div className="pointer-events-none absolute inset-0 z-0">
+    <section className="relative w-full overflow-hidden bg-[#0a0814] text-brand-text-dark md:h-full">
+      {/* 3D backdrop — top preview on mobile, full-bleed on desktop */}
+      <div className="pointer-events-none relative z-0 h-[45vh] w-full md:absolute md:inset-0 md:h-full">
         {reduced ? (
           <StudioFallback className="h-full w-full" />
         ) : (
@@ -61,13 +62,12 @@ export function Scene1WebSocial() {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_center,rgba(168,85,247,0.06)_0%,rgba(10,8,20,0.5)_50%,rgba(10,8,20,0.95)_100%)]"
+        className="pointer-events-none hidden bg-[radial-gradient(ellipse_at_center,rgba(168,85,247,0.06)_0%,rgba(10,8,20,0.5)_50%,rgba(10,8,20,0.95)_100%)] md:absolute md:inset-0 md:z-[1] md:block"
       />
 
-      {/* Split layout: copy left, content right */}
-      <div className="relative z-20 flex h-full flex-col lg:flex-row">
-        {/* LEFT — copy panel (vertically centered) */}
-        <div className="flex w-full shrink-0 items-center justify-center px-6 pt-20 lg:w-[42%] lg:max-w-[520px] lg:px-12 lg:pt-0">
+      {/* Split layout: stacked on mobile, copy left / content right on desktop */}
+      <div className="relative z-20 flex flex-col md:h-full md:flex-row">
+        <div className="flex w-full shrink-0 items-center justify-center px-6 py-10 md:w-[42%] md:max-w-[520px] md:px-12 md:py-0">
           <SceneCopyPanel
             index={1}
             title="Web Creation and Social Media"
@@ -78,11 +78,10 @@ export function Scene1WebSocial() {
           />
         </div>
 
-        {/* RIGHT — scrollable content */}
         <div
           ref={contentRef}
           data-scene-no-nav
-          className="flex-1 overflow-y-auto px-6 pb-32 pt-6 lg:border-l lg:border-white/5 lg:px-10 lg:pb-16 lg:pt-16"
+          className="w-full px-6 pb-32 pt-2 md:flex-1 md:overflow-y-auto md:border-l md:border-white/5 md:px-10 md:pb-16 md:pt-16"
           style={{ overscrollBehavior: "contain" }}
         >
           <div className="space-y-8">

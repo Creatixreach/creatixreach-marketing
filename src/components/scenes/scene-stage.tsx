@@ -23,11 +23,13 @@ export function SceneStage() {
   const Current = SCENES[currentScene] ?? Scene0Hero;
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-brand-navy">
+    // Mobile: inline block in normal page flow (page scrolls).
+    // Desktop: fixed full viewport, no page scroll.
+    <div className="relative w-full bg-brand-navy md:fixed md:inset-0 md:overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentScene}
-          className="absolute inset-0"
+          className="relative w-full md:absolute md:inset-0"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

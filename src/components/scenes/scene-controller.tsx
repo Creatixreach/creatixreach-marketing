@@ -55,7 +55,14 @@ function isInteractiveTarget(target: EventTarget | null): boolean {
 function SceneInputs({ next, prev }: { next: () => void; prev: () => void }) {
   const getActiveScrollEl = useActiveSceneScroll();
 
-  // Keyboard: Left/Right switch scenes, Up/Down scroll the active content.
+  // On mobile the page itself scrolls naturally end-to-end, so vertical
+  // wheel/keyboard scroll must NOT switch scenes — the browser handles it.
+  function isMobile() {
+    return typeof window !== "undefined" && window.innerWidth < 768;
+  }
+
+  // Keyboard: Left/Right switch scenes, Up/Down scroll the active content
+  // (desktop only — on mobile, let the browser scroll the page).
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (isInteractiveTarget(e.target)) return;
@@ -70,6 +77,7 @@ function SceneInputs({ next, prev }: { next: () => void; prev: () => void }) {
           return;
         case "ArrowDown":
         case "ArrowUp": {
+          if (isMobile()) return; // native page scroll
           const el = getActiveScrollEl();
           if (!el) return; // scene has no scrollable content panel
           e.preventDefault();
@@ -83,12 +91,12 @@ function SceneInputs({ next, prev }: { next: () => void; prev: () => void }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [next, prev, getActiveScrollEl]);
 
-  // Wheel: outside the content panel switches scenes (debounced); inside the
-  // panel falls through to native scroll because isInteractiveTarget catches
-  // data-scene-no-nav.
+  // Wheel: outside the content panel switches scenes (debounced) on desktop.
+  // On mobile, the whole page scrolls — never switch scenes from wheel/scroll.
   useEffect(() => {
     let lastFire = 0;
     function onWheel(e: WheelEvent) {
+      if (isMobile()) return;
       if (isInteractiveTarget(e.target)) return;
       const now = Date.now();
       if (now - lastFire < SCROLL_DEBOUNCE_MS) return;
