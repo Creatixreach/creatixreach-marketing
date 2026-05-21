@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import { useEffect, useRef, useState } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import * as THREE from "three";
 import { CrtMonitor, type MonitorContent } from "@/components/scenes/three/crt-monitor";
 import { DeskAndFloor } from "@/components/scenes/three/desk-and-floor";
 import { CodeAtmosphere } from "@/components/scenes/three/code-atmosphere";
@@ -64,12 +65,67 @@ const MONITORS: MonitorContent[] = [
 const GLOW_COLORS = ["#ffb070", "#7c83ff", "#70ddff"];
 const GLOW_INTENSITIES = [1.2, 1.5, 1.3];
 
+// 1D value-noise (no external lib) — used for handheld camera shake.
+// Hash + smoothstep interpolation, stable per integer input.
+function hash1(n: number): number {
+  const x = Math.sin(n * 127.1) * 43758.5453;
+  return x - Math.floor(x);
+}
+function noise1(x: number): number {
+  const i = Math.floor(x);
+  const f = x - i;
+  const u = f * f * (3 - 2 * f);
+  return hash1(i) * (1 - u) + hash1(i + 1) * u;
+}
+
+const BASE_CAM = new THREE.Vector3(0, 0.9, 5.2);
+const LOOK_AT = new THREE.Vector3(0, 0.05, 0.2);
+
+function CameraRig() {
+  const { camera, pointer } = useThree();
+  const tmp = useRef(new THREE.Vector3());
+  // Smoothed pointer offset
+  const ptr = useRef({ x: 0, y: 0 });
+
+  useFrame((_, delta) => {
+    const t = performance.now() * 0.001;
+
+    // 1. Slow orbit on Y (+/- 0.12 rad arc, 0.04 rad/sec rate)
+    const orbit = Math.sin(t * 0.04) * 0.12;
+
+    // 2. Lerp pointer offset (~0.02/frame at 60fps -> ~1.2/sec lerp factor)
+    const lerpK = 1 - Math.pow(1 - 0.02, delta * 60);
+    ptr.current.x += (pointer.x - ptr.current.x) * lerpK;
+    ptr.current.y += (pointer.y - ptr.current.y) * lerpK;
+
+    // 3. Handheld noise (tiny)
+    const nx = (noise1(t * 0.7) - 0.5) * 0.03;
+    const ny = (noise1(t * 0.6 + 13.1) - 0.5) * 0.03;
+
+    // Compose camera position
+    const radius = BASE_CAM.length();
+    const baseX = Math.sin(orbit) * radius;
+    const baseZ = Math.cos(orbit) * radius;
+
+    tmp.current.set(
+      baseX + ptr.current.x * 0.35 + nx,
+      BASE_CAM.y + ptr.current.y * -0.2 + ny,
+      baseZ
+    );
+    camera.position.copy(tmp.current);
+    camera.lookAt(LOOK_AT);
+  });
+
+  return null;
+}
+
 function MonitorsScene() {
   return (
     <>
       {/* Brand-navy fog so distant geometry dissolves into the room */}
       <fogExp2 attach="fog" args={["#0b1224", 0.08]} />
 
+      <CameraRig />
       <SceneLighting />
 
       <CodeAtmosphere />
@@ -115,7 +171,7 @@ export function FloatingMonitors({ className }: { className?: string }) {
   return (
     <div className={className} aria-hidden="true">
       <Canvas
-        camera={{ position: [0, 0.6, 5.5], fov: 45 }}
+        camera={{ position: [0, 0.9, 5.2], fov: 45 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         dpr={[1, 2]}
       >
