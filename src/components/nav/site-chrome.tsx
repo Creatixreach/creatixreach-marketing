@@ -91,7 +91,7 @@ export function SiteChrome() {
           {isCoarse ? "Swipe to navigate" : "Use arrow keys to navigate"}
         </div>
 
-        {/* Progress dots */}
+        {/* Progress dots — active scene is a wider pill (16x4), others 4x4 round */}
         <div className="pointer-events-auto flex items-center gap-2">
           {Array.from({ length: totalScenes }).map((_, i) => {
             const active = i === currentScene;
@@ -103,10 +103,10 @@ export function SiteChrome() {
                 aria-label={`Go to scene ${i + 1} of ${totalScenes}`}
                 aria-current={active ? "true" : undefined}
                 className={cn(
-                  "h-2.5 w-2.5 rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy",
+                  "h-1 rounded-full transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy",
                   active
-                    ? "scale-110 bg-brand-indigo ring-brand-indigo"
-                    : "bg-slate-500/40 hover:bg-slate-300/60 ring-white"
+                    ? "w-4 bg-brand-indigo shadow-[0_0_8px_rgba(124,131,255,0.7)]"
+                    : "w-1 bg-slate-500/50 hover:bg-slate-300/70"
                 )}
               />
             );
