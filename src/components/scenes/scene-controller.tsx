@@ -11,7 +11,11 @@ import {
   type ReactNode,
 } from "react";
 
-const TOTAL_SCENES = 5;
+// Phase 2 has 6 scenes total: Scene 0 hero + Scenes 1-5 placeholders.
+// (The Phase 2 brief says "5" in one place and lists 5 stubs + hero in
+// another; the 6-scene reading is the consistent one. Phase 3 fills 1-4,
+// Phase 4 fills 5.)
+const TOTAL_SCENES = 6;
 const SCROLL_DEBOUNCE_MS = 400;
 const SWIPE_THRESHOLD_PX = 60;
 
