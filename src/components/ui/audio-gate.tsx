@@ -59,7 +59,7 @@ export function AudioGate() {
             <div className="mb-2 text-xs uppercase tracking-[0.3em] text-brand-muted-dark">
               CreatixReach
             </div>
-            <h2 className="mb-3 font-serif text-3xl font-normal text-white">
+            <h2 className="mb-3 text-2xl font-bold tracking-tight text-white">
               Enter the room.
             </h2>
             <p className="mb-8 text-sm text-brand-muted-dark">

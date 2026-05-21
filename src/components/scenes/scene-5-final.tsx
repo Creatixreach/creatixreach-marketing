@@ -128,7 +128,7 @@ export function Scene5Final() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className="text-balance font-serif text-5xl font-normal tracking-tight sm:text-6xl"
+              className="text-balance text-4xl font-bold tracking-tight sm:text-5xl"
             >
               Pick a room, or just message us.
             </motion.h2>
@@ -185,7 +185,7 @@ export function Scene5Final() {
                   <MessageSquare className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-serif text-3xl font-normal tracking-tight">
+                  <h3 className="text-2xl font-bold tracking-tight">
                     Send a brief.
                   </h3>
                   <p className="mt-1 text-sm text-brand-muted-dark">

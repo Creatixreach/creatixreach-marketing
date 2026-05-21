@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
@@ -8,13 +8,6 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   display: "swap",
   weight: ["400", "500", "600", "700"],
-});
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  variable: "--font-instrument-serif",
-  display: "swap",
-  weight: "400",
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -116,7 +109,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${spaceGrotesk.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} font-sans antialiased`}
+        className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >
         {children}
         <Analytics />

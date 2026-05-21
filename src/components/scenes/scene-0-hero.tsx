@@ -84,7 +84,7 @@ export function Scene0Hero() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="text-balance font-serif text-5xl font-normal tracking-tight sm:text-6xl md:text-7xl"
+            className="text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl"
           >
             We run the whole stack.
           </motion.h1>

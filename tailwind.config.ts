@@ -62,7 +62,6 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-space-grotesk)", "system-ui", "sans-serif"],
-        serif: ["var(--font-instrument-serif)", "Georgia", "serif"],
         mono: ["var(--font-jetbrains-mono)", "ui-monospace", "monospace"],
       },
     },

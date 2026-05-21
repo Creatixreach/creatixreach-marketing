@@ -57,7 +57,7 @@ function PricingAnchor() {
       {/* thin indigo top accent */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-indigo to-transparent" />
       <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-baseline sm:gap-6">
-        <div className="font-serif text-6xl font-normal leading-none text-white sm:text-7xl">
+        <div className="text-5xl font-extrabold leading-none tracking-tight text-white sm:text-6xl">
           {SCENE_4_PRICING.amount}
         </div>
         <div className="flex-1 space-y-1">
@@ -89,7 +89,7 @@ function AchievementStats() {
           transition={{ duration: 0.35, delay: 0.45 + i * 0.08, ease: "easeOut" }}
           className="rounded-xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-sm"
         >
-          <div className="font-serif text-3xl font-normal leading-none text-white sm:text-4xl">
+          <div className="text-3xl font-bold leading-none tracking-tight text-white sm:text-4xl">
             {s.display}
           </div>
           <div className="mt-2 text-[10px] font-medium uppercase tracking-[0.2em] text-brand-muted-dark">

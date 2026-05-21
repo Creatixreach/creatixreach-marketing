@@ -25,7 +25,7 @@ export default function TermsPage() {
       </header>
       <main className="container py-16 md:py-24">
         <div className="mx-auto max-w-2xl">
-          <h1 className="font-serif text-5xl font-normal tracking-tight md:text-6xl">
+          <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
             Terms of Service
           </h1>
           <p className="mt-4 text-sm uppercase tracking-[0.25em] text-brand-muted-dark">
