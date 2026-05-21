@@ -9,7 +9,8 @@ import { CtaButton } from "@/components/ui/cta-button";
 import { WhatsappIcon } from "@/components/ui/whatsapp-icon";
 import { MonitorsFallback } from "@/components/scenes/monitors-fallback";
 import { SceneNavHint } from "@/components/scenes/scene-nav-hint";
-import { isUnlocked, playSound, stopSound } from "@/lib/audio";
+import { isMuted, isUnlocked } from "@/lib/audio";
+import { playKeyboardClick } from "@/lib/audio-music";
 import { whatsappUrl } from "@/lib/cta-messages";
 import { usePrefersReducedMotion } from "@/lib/device-tier";
 
@@ -28,33 +29,34 @@ const BULLETS = [
 export function Scene0Hero() {
   const reduced = usePrefersReducedMotion();
 
-  // Try to start ambient loops once the audio gate has unlocked.
+  // Scene 0 only: fire occasional keyboard clicks via Tone.js so it feels
+  // like someone is typing in the coding room. The continuous music started
+  // by the audio gate keeps playing across scene transitions.
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (reduced) return;
+
     let cancelled = false;
-    function tryStart() {
+    let timeoutId: number | null = null;
+
+    function schedule() {
       if (cancelled) return;
-      if (!isUnlocked()) return false;
-      playSound("keyboard-loop", { fadeIn: 800, volume: 0.35 });
-      playSound("synth-pad", { fadeIn: 1200, volume: 0.25 });
-      return true;
+      // Random 800-2000ms gap between key presses.
+      const delay = 800 + Math.random() * 1200;
+      timeoutId = window.setTimeout(() => {
+        if (!cancelled && isUnlocked() && !isMuted()) {
+          playKeyboardClick();
+        }
+        schedule();
+      }, delay);
     }
-    if (!tryStart()) {
-      const interval = window.setInterval(() => {
-        if (tryStart()) window.clearInterval(interval);
-      }, 600);
-      return () => {
-        cancelled = true;
-        window.clearInterval(interval);
-        stopSound("keyboard-loop", 400);
-        stopSound("synth-pad", 600);
-      };
-    }
+    schedule();
+
     return () => {
       cancelled = true;
-      stopSound("keyboard-loop", 400);
-      stopSound("synth-pad", 600);
+      if (timeoutId !== null) window.clearTimeout(timeoutId);
     };
-  }, []);
+  }, [reduced]);
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden bg-brand-navy text-brand-text-dark md:h-full md:min-h-0">

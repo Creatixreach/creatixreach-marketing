@@ -7,6 +7,7 @@ import { WhatsappButton } from "@/components/ui/whatsapp-button";
 import { useScene } from "@/components/scenes/scene-controller";
 import { SceneNavHint } from "@/components/scenes/scene-nav-hint";
 import { isMuted, toggleMuted } from "@/lib/audio";
+import { setMusicMuted } from "@/lib/audio-music";
 import { whatsappUrl, type CtaTopic } from "@/lib/cta-messages";
 import { cn } from "@/lib/utils";
 
@@ -28,12 +29,17 @@ export function SiteChrome() {
   const [muted, setMuted] = useState(false);
 
   useEffect(() => {
-    setMuted(isMuted());
+    const initial = isMuted();
+    setMuted(initial);
+    // Apply the persisted mute preference to the Tone.js destination too,
+    // so the procedural music respects it from the first frame.
+    setMusicMuted(initial);
   }, []);
 
   function onToggleMute() {
     const newVal = toggleMuted();
     setMuted(newVal);
+    setMusicMuted(newVal);
   }
 
   const topic = SCENE_TOPIC[currentScene] ?? "general";

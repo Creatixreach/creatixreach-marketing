@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { unlockAudio } from "@/lib/audio";
+import * as Tone from "tone";
+import { isMuted, unlockAudio } from "@/lib/audio";
 import { registerSceneAudio } from "@/lib/scene-audio";
+import { setMusicMuted, startMusic } from "@/lib/audio-music";
 
 const SEEN_KEY = "cr-marketing-audio-gate-seen";
 
@@ -31,6 +33,23 @@ export function AudioGate() {
   function onEnter() {
     registerSceneAudio();
     unlockAudio();
+    // Procedural ambient music — skip for reduced-motion users
+    // (also a small accessibility win for users sensitive to layered sound).
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduced) {
+      // Tone.start() must run inside the click handler — browser autoplay
+      // policy. Then begin the looped pad + arpeggio.
+      Tone.start()
+        .then(() => {
+          setMusicMuted(isMuted());
+          return startMusic();
+        })
+        .catch(() => {
+          // If audio context cannot start, fail silently — UI is not blocked.
+        });
+    }
     dismiss();
   }
 
