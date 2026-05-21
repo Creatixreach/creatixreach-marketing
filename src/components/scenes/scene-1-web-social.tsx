@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { SceneCopyPanel } from "@/components/scenes/scene-copy-panel";
 import { SimpleIconStrip, LucideStrip } from "@/components/scenes/detail-strip";
 import { StudioFallback } from "@/components/scenes/fallbacks/studio-fallback";
+import { useSceneScroll } from "@/components/scenes/scene-scroll-context";
 import { isUnlocked, playSound, stopSound } from "@/lib/audio";
 import { usePrefersReducedMotion } from "@/lib/device-tier";
 import { SCENE_1_STACKS, SCENE_1_SITES } from "@/lib/scene-content";
@@ -22,6 +23,7 @@ const BULLETS = [
 
 export function Scene1WebSocial() {
   const reduced = usePrefersReducedMotion();
+  const contentRef = useSceneScroll();
 
   useEffect(() => {
     let cancelled = false;
@@ -62,26 +64,27 @@ export function Scene1WebSocial() {
         className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_center,rgba(168,85,247,0.06)_0%,rgba(10,8,20,0.5)_50%,rgba(10,8,20,0.95)_100%)]"
       />
 
-      {/* Scrollable foreground — copy panel on top, detail strips below */}
-      <div
-        data-scene-no-nav
-        className="relative z-20 h-full w-full overflow-y-auto"
-        style={{ overscrollBehavior: "contain" }}
-      >
-        <div className="mx-auto flex min-h-full w-full max-w-6xl flex-col gap-12 px-6 pb-40 pt-24 sm:px-10 sm:pt-24">
-          {/* Copy panel — left-aligned on desktop, centered on mobile */}
-          <div className="flex justify-center sm:justify-start sm:pl-2 lg:pl-8">
-            <SceneCopyPanel
-              index={1}
-              title="Web Creation and Social Media"
-              sub="Sites that ship, content that compounds."
-              bullets={BULLETS}
-              topic="web-social"
-              accent="bg-pink-400"
-            />
-          </div>
+      {/* Split layout: copy left, content right */}
+      <div className="relative z-20 flex h-full flex-col lg:flex-row">
+        {/* LEFT — copy panel (vertically centered) */}
+        <div className="flex w-full shrink-0 items-center justify-center px-6 pt-20 lg:w-[42%] lg:max-w-[520px] lg:px-12 lg:pt-0">
+          <SceneCopyPanel
+            index={1}
+            title="Web Creation and Social Media"
+            sub="Sites that ship, content that compounds."
+            bullets={BULLETS}
+            topic="web-social"
+            accent="bg-pink-400"
+          />
+        </div>
 
-          {/* Detail strips */}
+        {/* RIGHT — scrollable content */}
+        <div
+          ref={contentRef}
+          data-scene-no-nav
+          className="flex-1 overflow-y-auto px-6 pb-32 pt-6 lg:border-l lg:border-white/5 lg:px-10 lg:pb-16 lg:pt-16"
+          style={{ overscrollBehavior: "contain" }}
+        >
           <div className="space-y-8">
             <SimpleIconStrip {...SCENE_1_STACKS} rowDelay={0} />
             <LucideStrip {...SCENE_1_SITES} rowDelay={0.15} />

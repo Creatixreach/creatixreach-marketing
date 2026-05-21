@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { SceneCopyPanel } from "@/components/scenes/scene-copy-panel";
 import { SkylineFallback } from "@/components/scenes/fallbacks/skyline-fallback";
+import { useSceneScroll } from "@/components/scenes/scene-scroll-context";
 import { isUnlocked, playSound, stopSound } from "@/lib/audio";
 import { usePrefersReducedMotion } from "@/lib/device-tier";
 import { SCENE_4_PRICING, SCENE_4_STATS } from "@/lib/scene-content";
@@ -104,6 +105,7 @@ function AchievementStats() {
 export function Scene4ColdCalling() {
   const reduced = usePrefersReducedMotion();
   const leadCount = useLeadCounter();
+  const contentRef = useSceneScroll();
 
   useEffect(() => {
     let cancelled = false;
@@ -166,25 +168,28 @@ export function Scene4ColdCalling() {
         </div>
       </motion.div>
 
-      <div
-        data-scene-no-nav
-        className="relative z-20 h-full w-full overflow-y-auto"
-        style={{ overscrollBehavior: "contain" }}
-      >
-        <div className="mx-auto flex min-h-full w-full max-w-6xl flex-col gap-10 px-6 pb-40 pt-24 sm:px-10 sm:pt-24">
-          <div className="flex justify-center sm:justify-start sm:pl-2 lg:pl-8">
-            <SceneCopyPanel
-              index={4}
-              title="Cold Calling and Lead Generation"
-              sub="We don't just hand you a dialer. We run the campaigns."
-              bullets={BULLETS}
-              topic="cold-calling"
-              accent="bg-amber-400"
-            />
-          </div>
+      <div className="relative z-20 flex h-full flex-col lg:flex-row">
+        <div className="flex w-full shrink-0 items-center justify-center px-6 pt-20 lg:w-[42%] lg:max-w-[520px] lg:px-12 lg:pt-0">
+          <SceneCopyPanel
+            index={4}
+            title="Cold Calling and Lead Generation"
+            sub="We don't just hand you a dialer. We run the campaigns."
+            bullets={BULLETS}
+            topic="cold-calling"
+            accent="bg-amber-400"
+          />
+        </div>
 
-          <PricingAnchor />
-          <AchievementStats />
+        <div
+          ref={contentRef}
+          data-scene-no-nav
+          className="flex-1 overflow-y-auto px-6 pb-32 pt-6 lg:border-l lg:border-white/5 lg:px-10 lg:pb-16 lg:pt-16"
+          style={{ overscrollBehavior: "contain" }}
+        >
+          <div className="space-y-8">
+            <PricingAnchor />
+            <AchievementStats />
+          </div>
         </div>
       </div>
     </section>

@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { SceneCopyPanel } from "@/components/scenes/scene-copy-panel";
 import { SimpleIconStrip, LucideStrip } from "@/components/scenes/detail-strip";
 import { CorridorFallback } from "@/components/scenes/fallbacks/corridor-fallback";
+import { useSceneScroll } from "@/components/scenes/scene-scroll-context";
 import { isUnlocked, playSound, stopSound } from "@/lib/audio";
 import { usePrefersReducedMotion } from "@/lib/device-tier";
 import { SCENE_2_PLATFORMS, SCENE_2_VERTICALS } from "@/lib/scene-content";
@@ -22,6 +23,7 @@ const BULLETS = [
 
 export function Scene2Systems() {
   const reduced = usePrefersReducedMotion();
+  const contentRef = useSceneScroll();
 
   useEffect(() => {
     let cancelled = false;
@@ -62,24 +64,24 @@ export function Scene2Systems() {
         className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.04)_0%,rgba(3,16,24,0.65)_60%,rgba(3,16,24,0.95)_100%)]"
       />
 
-      <div
-        data-scene-no-nav
-        className="relative z-20 h-full w-full overflow-y-auto"
-        style={{ overscrollBehavior: "contain" }}
-      >
-        <div className="mx-auto flex min-h-full w-full max-w-6xl flex-col gap-12 px-6 pb-40 pt-24 sm:px-10 sm:pt-24">
-          {/* Copy panel — right-aligned on desktop, centered on mobile */}
-          <div className="flex justify-center sm:justify-end sm:pr-2 lg:pr-8">
-            <SceneCopyPanel
-              index={2}
-              title="Systems, APIs, Automations, Integrations"
-              sub="The plumbing professional companies actually need."
-              bullets={BULLETS}
-              topic="systems"
-              accent="bg-cyan-400"
-            />
-          </div>
+      <div className="relative z-20 flex h-full flex-col lg:flex-row">
+        <div className="flex w-full shrink-0 items-center justify-center px-6 pt-20 lg:w-[42%] lg:max-w-[520px] lg:px-12 lg:pt-0">
+          <SceneCopyPanel
+            index={2}
+            title="Systems, APIs, Automations, Integrations"
+            sub="The plumbing professional companies actually need."
+            bullets={BULLETS}
+            topic="systems"
+            accent="bg-cyan-400"
+          />
+        </div>
 
+        <div
+          ref={contentRef}
+          data-scene-no-nav
+          className="flex-1 overflow-y-auto px-6 pb-32 pt-6 lg:border-l lg:border-white/5 lg:px-10 lg:pb-16 lg:pt-16"
+          style={{ overscrollBehavior: "contain" }}
+        >
           <div className="space-y-8">
             <SimpleIconStrip {...SCENE_2_PLATFORMS} rowDelay={0} />
             <LucideStrip {...SCENE_2_VERTICALS} rowDelay={0.15} />

@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { SceneCopyPanel } from "@/components/scenes/scene-copy-panel";
 import { RadialPortalShowcase } from "@/components/scenes/radial-portal-showcase";
 import { CallFloorFallback } from "@/components/scenes/fallbacks/call-floor-fallback";
+import { useSceneScroll } from "@/components/scenes/scene-scroll-context";
 import { isUnlocked, playSound, stopSound } from "@/lib/audio";
 import { usePrefersReducedMotion } from "@/lib/device-tier";
 
@@ -21,6 +22,7 @@ const BULLETS = [
 
 export function Scene3Dialer() {
   const reduced = usePrefersReducedMotion();
+  const contentRef = useSceneScroll();
 
   useEffect(() => {
     let cancelled = false;
@@ -61,34 +63,30 @@ export function Scene3Dialer() {
         className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_center,rgba(168,85,247,0.06)_0%,rgba(13,8,32,0.55)_55%,rgba(13,8,32,0.95)_100%)]"
       />
 
-      <div
-        data-scene-no-nav
-        className="relative z-20 h-full w-full overflow-y-auto"
-        style={{ overscrollBehavior: "contain" }}
-      >
-        <div className="mx-auto flex min-h-full w-full max-w-6xl flex-col gap-12 px-6 pb-40 pt-24 sm:px-10 sm:pt-24">
-          {/* Copy panel — left-aligned on desktop, centered on mobile.
-           *  Note: the "Go to the dialer portal" link is intentionally kept in
-           *  the panel as redundant emphasis — the showcase below carries the
-           *  same call to action, but a CTA in the headline area never hurts. */}
-          <div className="flex justify-center sm:justify-start sm:pl-2 lg:pl-8">
-            <SceneCopyPanel
-              index={3}
-              flag="Our flagship product · CreatixReach Dialer"
-              title="Telemarketing and Call Center Setup"
-              sub="We set up the floor, you start dialing."
-              bullets={BULLETS}
-              topic="dialer"
-              accent="bg-amber-400"
-              extraLink={{
-                label: "Already a customer? Go to the dialer portal",
-                href: "https://app.creatixreach.io",
-                external: true,
-              }}
-            />
-          </div>
+      <div className="relative z-20 flex h-full flex-col lg:flex-row">
+        <div className="flex w-full shrink-0 items-center justify-center px-6 pt-20 lg:w-[42%] lg:max-w-[520px] lg:px-12 lg:pt-0">
+          <SceneCopyPanel
+            index={3}
+            flag="Our flagship product · CreatixReach Dialer"
+            title="Telemarketing and Call Center Setup"
+            sub="We set up the floor, you start dialing."
+            bullets={BULLETS}
+            topic="dialer"
+            accent="bg-amber-400"
+            extraLink={{
+              label: "Already a customer? Go to the dialer portal",
+              href: "https://app.creatixreach.io",
+              external: true,
+            }}
+          />
+        </div>
 
-          {/* Portal feature showcase */}
+        <div
+          ref={contentRef}
+          data-scene-no-nav
+          className="flex flex-1 items-center justify-center overflow-y-auto px-6 pb-32 pt-6 lg:border-l lg:border-white/5 lg:px-10 lg:pb-16 lg:pt-16"
+          style={{ overscrollBehavior: "contain" }}
+        >
           <RadialPortalShowcase />
         </div>
       </div>

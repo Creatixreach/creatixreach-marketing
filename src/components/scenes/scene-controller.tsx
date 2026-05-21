@@ -10,6 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { SceneScrollProvider } from "@/components/scenes/scene-scroll-context";
 
 // Phase 2 has 6 scenes total: Scene 0 hero + Scenes 1-5 placeholders.
 // (The Phase 2 brief says "5" in one place and lists 5 stubs + hero in
@@ -150,7 +151,11 @@ export function SceneController({ children }: { children: ReactNode }) {
     [currentScene, next, prev, goTo]
   );
 
-  return <SceneContext.Provider value={value}>{children}</SceneContext.Provider>;
+  return (
+    <SceneContext.Provider value={value}>
+      <SceneScrollProvider>{children}</SceneScrollProvider>
+    </SceneContext.Provider>
+  );
 }
 
 export { TOTAL_SCENES };
