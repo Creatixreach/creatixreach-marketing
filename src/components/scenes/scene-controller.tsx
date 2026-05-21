@@ -42,6 +42,10 @@ function isInteractiveTarget(target: EventTarget | null): boolean {
   const tag = target.tagName;
   if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
   if (target.isContentEditable) return true;
+  // Scenes with embedded scrollable content (e.g. Scene 5's form + footer)
+  // mark their scroll wrapper with data-scene-no-nav so wheel/swipe inside
+  // it doesn't trigger scene navigation.
+  if (target.closest("[data-scene-no-nav]")) return true;
   return false;
 }
 
