@@ -6,6 +6,7 @@ import { CrtMonitor, type MonitorContent } from "@/components/scenes/three/crt-m
 import { DeskAndFloor } from "@/components/scenes/three/desk-and-floor";
 import { CodeAtmosphere } from "@/components/scenes/three/code-atmosphere";
 import { SceneLighting } from "@/components/scenes/three/scene-lighting";
+import { SceneEnvironment } from "@/components/scenes/three/scene-environment";
 
 const MONITORS: MonitorContent[] = [
   {
@@ -98,6 +99,8 @@ function MonitorsScene() {
         glowIntensity={GLOW_INTENSITIES[2]}
         floatPhase={3.2}
       />
+
+      <SceneEnvironment />
     </>
   );
 }
