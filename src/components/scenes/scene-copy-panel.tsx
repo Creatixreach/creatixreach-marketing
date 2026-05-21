@@ -71,7 +71,7 @@ export function SceneCopyPanel({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl"
+        className="text-balance font-serif text-4xl font-normal tracking-tight sm:text-5xl md:text-6xl"
       >
         {title}
       </motion.h1>

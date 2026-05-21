@@ -50,7 +50,7 @@ export default function ContactPage({
           <div className="mx-auto max-w-5xl">
             <div className="grid gap-12 lg:grid-cols-5">
               <div className="lg:col-span-2">
-                <h1 className="text-balance text-4xl font-semibold tracking-tight md:text-5xl">
+                <h1 className="text-balance font-serif text-5xl font-normal tracking-tight md:text-6xl">
                   Send us a brief.
                 </h1>
                 <p className="mt-4 text-balance text-lg text-brand-muted-dark">
