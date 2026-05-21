@@ -53,7 +53,6 @@ export function WorldGlobe({
   position?: [number, number, number];
 }) {
   const groupRef = useRef<THREE.Group | null>(null);
-  const arcLineRefs = useRef<THREE.Line[]>([]);
   const arcsRef = useRef<Arc[]>([]);
   const ageRef = useRef<number[]>([]);
 

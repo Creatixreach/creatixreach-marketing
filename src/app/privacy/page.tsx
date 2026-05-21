@@ -32,7 +32,7 @@ export default function PrivacyPage() {
             Coming soon
           </p>
           <p className="mt-8 text-base leading-relaxed text-brand-muted-dark">
-            We're drafting the full privacy policy. In the meantime: CreatixReach
+            We&apos;re drafting the full privacy policy. In the meantime: CreatixReach
             only uses the contact information you submit through this site to
             reply to you. We never sell or share your data with third parties.
             For questions, email{" "}
