@@ -148,7 +148,7 @@ export function CrtMonitor({
           map={screenTex}
           emissiveMap={screenTex}
           emissive={new THREE.Color(glowColor)}
-          emissiveIntensity={1.05}
+          emissiveIntensity={2.6}
           toneMapped={false}
           roughness={0.35}
           metalness={0}
@@ -205,7 +205,7 @@ export function CrtMonitor({
         position={[0, 0, 0.6]}
         color={glowColor}
         intensity={glowIntensity}
-        distance={6}
+        distance={8}
         decay={2}
       />
     </group>

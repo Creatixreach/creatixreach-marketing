@@ -26,9 +26,9 @@ export function SceneEnvironment({ enabled = true }: SceneEnvironmentProps) {
 
       <EffectComposer multisampling={0}>
         <Bloom
-          intensity={0.6}
-          luminanceThreshold={0.3}
-          luminanceSmoothing={0.9}
+          intensity={1.4}
+          luminanceThreshold={0.2}
+          luminanceSmoothing={0.85}
           mipmapBlur
         />
         <ChromaticAberration

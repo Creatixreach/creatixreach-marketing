@@ -64,7 +64,7 @@ const MONITORS: MonitorContent[] = [
 // Glow color per monitor — matches its content vibe.
 // 0: terminal (warm amber), 1: JSX code (brand indigo), 2: call-flow (cool cyan)
 const GLOW_COLORS = ["#ffb070", "#7c83ff", "#70ddff"];
-const GLOW_INTENSITIES = [1.2, 1.5, 1.3];
+const GLOW_INTENSITIES = [2.0, 2.5, 2.2];
 
 // 1D value-noise (no external lib) — used for handheld camera shake.
 // Hash + smoothstep interpolation, stable per integer input.
