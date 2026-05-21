@@ -13,10 +13,10 @@ import {
   CreditCard,
   GraduationCap,
   Home,
-  LogIn,
   Megaphone,
   Rocket,
   ScrollText,
+  ShieldCheck,
   ShoppingBag,
   Sparkles,
   Stethoscope,
@@ -46,12 +46,10 @@ export type ContentStrip<T> = {
   cards: T[];
 };
 
-export type PortalPill = {
+export type PortalFeature = {
   Icon: LucideIcon;
-  label: string;
-  tooltip: string;
-  /** Always opens app.creatixreach.io for now. */
-  href: string;
+  name: string;
+  description: string;
 };
 
 export type Stat = {
@@ -202,43 +200,44 @@ export const SCENE_2_VERTICALS: ContentStrip<LucideCard> = {
 
 export const SCENE_3_PORTAL_INTRO = "What runs CreatixReach Dialer";
 export const SCENE_3_PORTAL_HREF = "https://app.creatixreach.io";
+export const SCENE_3_PORTAL_CTA_LABEL = "Open the dialer portal";
 
-export const SCENE_3_PORTAL_PILLS: PortalPill[] = [
+export const SCENE_3_PORTAL_FEATURES: PortalFeature[] = [
   {
     Icon: Zap,
-    label: "Easy Onboarding",
-    tooltip: "Quick-start your call center in under 30 minutes",
-    href: SCENE_3_PORTAL_HREF,
+    name: "Easy Onboarding",
+    description:
+      "Spin up your call center in under 30 minutes. Guided setup, no telephony background required.",
   },
   {
     Icon: Megaphone,
-    label: "Create Campaigns",
-    tooltip: "Build outbound campaigns with scripts and lead lists",
-    href: SCENE_3_PORTAL_HREF,
-  },
-  {
-    Icon: CreditCard,
-    label: "Manage Payments",
-    tooltip: "Track usage, top up balance, view invoices",
-    href: SCENE_3_PORTAL_HREF,
-  },
-  {
-    Icon: ScrollText,
-    label: "Call Logs",
-    tooltip: "Listen to recordings, audit agent activity",
-    href: SCENE_3_PORTAL_HREF,
+    name: "Create Campaigns",
+    description:
+      "Build outbound campaigns with custom scripts, lead lists, and dialing rules. Launch in minutes, monitor in real time.",
   },
   {
     Icon: Users,
-    label: "Manage Agents",
-    tooltip: "Add agents, assign roles, monitor live calls",
-    href: SCENE_3_PORTAL_HREF,
+    name: "Manage Agents",
+    description:
+      "Add agents, assign roles and skills, monitor live calls, and coach during the conversation.",
   },
   {
-    Icon: LogIn,
-    label: "Sign in to Portal",
-    tooltip: "Existing customers, go to your dashboard",
-    href: SCENE_3_PORTAL_HREF,
+    Icon: ScrollText,
+    name: "Call Logs",
+    description:
+      "Listen to recordings, audit agent activity, and export call data for compliance reviews.",
+  },
+  {
+    Icon: CreditCard,
+    name: "Billing and Payments",
+    description:
+      "Top up your balance, view detailed usage reports, and pay only for what you call.",
+  },
+  {
+    Icon: ShieldCheck,
+    name: "Multi-tenant Isolation",
+    description:
+      "Every customer gets their own dialer instance. Your data, agents, and campaigns stay separate.",
   },
 ];
 

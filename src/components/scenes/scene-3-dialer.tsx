@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
 import { SceneCopyPanel } from "@/components/scenes/scene-copy-panel";
-import { RadialPortalShowcase } from "@/components/scenes/radial-portal-showcase";
+import { PortalFeatureGrid } from "@/components/scenes/portal-feature-grid";
 import { CallFloorFallback } from "@/components/scenes/fallbacks/call-floor-fallback";
 import { useSceneScroll } from "@/components/scenes/scene-scroll-context";
 import { isUnlocked, playSound, stopSound } from "@/lib/audio";
@@ -73,21 +73,16 @@ export function Scene3Dialer() {
             bullets={BULLETS}
             topic="dialer"
             accent="bg-amber-400"
-            extraLink={{
-              label: "Already a customer? Go to the dialer portal",
-              href: "https://app.creatixreach.io",
-              external: true,
-            }}
           />
         </div>
 
         <div
           ref={contentRef}
           data-scene-no-nav
-          className="flex flex-1 items-center justify-center overflow-y-auto px-6 pb-32 pt-6 lg:border-l lg:border-white/5 lg:px-10 lg:pb-16 lg:pt-16"
+          className="flex-1 overflow-y-auto px-6 pb-32 pt-6 lg:border-l lg:border-white/5 lg:px-10 lg:pb-16 lg:pt-16"
           style={{ overscrollBehavior: "contain" }}
         >
-          <RadialPortalShowcase />
+          <PortalFeatureGrid />
         </div>
       </div>
     </section>
