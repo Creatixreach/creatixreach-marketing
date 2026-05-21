@@ -22,6 +22,19 @@ export function SceneLighting() {
         intensity={0.6}
         color="#b8d4ff"
       />
+
+      {/* Desk spotlight — warm overhead lamp painting the workspace.
+       *  Default target sits at origin, so this cone shoots from above-front
+       *  down through the monitors onto the desk. */}
+      <spotLight
+        position={[0, 8, 2]}
+        color="#fff0d0"
+        intensity={0.8}
+        angle={Math.PI / 4}
+        penumbra={0.5}
+        decay={1}
+        distance={20}
+      />
     </>
   );
 }
