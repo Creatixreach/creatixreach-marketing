@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Globe, Layers, MessageSquare, PhoneCall, Sparkles } from "lucide-react";
 import { Logo } from "@/components/branding/logo";
@@ -9,7 +8,6 @@ import { ContactForm } from "@/components/contact/contact-form";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { useScene } from "@/components/scenes/scene-controller";
 import { FinalFallback } from "@/components/scenes/fallbacks/final-fallback";
-import { isUnlocked, playSound, stopSound } from "@/lib/audio";
 import { usePrefersReducedMotion } from "@/lib/device-tier";
 
 const FinalVoidScene = dynamic(
@@ -64,30 +62,6 @@ const RECAP: Recap[] = [
 export function Scene5Final() {
   const reduced = usePrefersReducedMotion();
   const { goTo } = useScene();
-
-  useEffect(() => {
-    let cancelled = false;
-    function tryStart() {
-      if (cancelled) return false;
-      if (!isUnlocked()) return false;
-      playSound("synth-pad", { fadeIn: 1000, volume: 0.22 });
-      return true;
-    }
-    if (!tryStart()) {
-      const interval = window.setInterval(() => {
-        if (tryStart()) window.clearInterval(interval);
-      }, 600);
-      return () => {
-        cancelled = true;
-        window.clearInterval(interval);
-        stopSound("synth-pad", 500);
-      };
-    }
-    return () => {
-      cancelled = true;
-      stopSound("synth-pad", 500);
-    };
-  }, []);
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden bg-[#040414] text-brand-text-dark md:h-full md:min-h-0">

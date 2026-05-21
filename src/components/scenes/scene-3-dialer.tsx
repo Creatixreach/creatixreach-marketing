@@ -1,12 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
 import { SceneCopyPanel } from "@/components/scenes/scene-copy-panel";
 import { PortalFeatureGrid } from "@/components/scenes/portal-feature-grid";
 import { CallFloorFallback } from "@/components/scenes/fallbacks/call-floor-fallback";
 import { useSceneScroll } from "@/components/scenes/scene-scroll-context";
-import { isUnlocked, playSound, stopSound } from "@/lib/audio";
 import { usePrefersReducedMotion } from "@/lib/device-tier";
 
 const CallFloorScene = dynamic(
@@ -23,30 +21,6 @@ const BULLETS = [
 export function Scene3Dialer() {
   const reduced = usePrefersReducedMotion();
   const contentRef = useSceneScroll();
-
-  useEffect(() => {
-    let cancelled = false;
-    function tryStart() {
-      if (cancelled) return false;
-      if (!isUnlocked()) return false;
-      playSound("call-center-ambience", { fadeIn: 800, volume: 0.28 });
-      return true;
-    }
-    if (!tryStart()) {
-      const interval = window.setInterval(() => {
-        if (tryStart()) window.clearInterval(interval);
-      }, 600);
-      return () => {
-        cancelled = true;
-        window.clearInterval(interval);
-        stopSound("call-center-ambience", 400);
-      };
-    }
-    return () => {
-      cancelled = true;
-      stopSound("call-center-ambience", 400);
-    };
-  }, []);
 
   return (
     <section className="relative w-full overflow-hidden bg-[#0d0820] text-brand-text-dark md:h-full">

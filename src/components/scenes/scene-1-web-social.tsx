@@ -1,12 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
 import { SceneCopyPanel } from "@/components/scenes/scene-copy-panel";
 import { SimpleIconStrip, LucideStrip } from "@/components/scenes/detail-strip";
 import { StudioFallback } from "@/components/scenes/fallbacks/studio-fallback";
 import { useSceneScroll } from "@/components/scenes/scene-scroll-context";
-import { isUnlocked, playSound, stopSound } from "@/lib/audio";
 import { usePrefersReducedMotion } from "@/lib/device-tier";
 import { SCENE_1_STACKS, SCENE_1_SITES } from "@/lib/scene-content";
 
@@ -24,30 +22,6 @@ const BULLETS = [
 export function Scene1WebSocial() {
   const reduced = usePrefersReducedMotion();
   const contentRef = useSceneScroll();
-
-  useEffect(() => {
-    let cancelled = false;
-    function tryStart() {
-      if (cancelled) return false;
-      if (!isUnlocked()) return false;
-      playSound("synth-pad", { fadeIn: 800, volume: 0.22 });
-      return true;
-    }
-    if (!tryStart()) {
-      const interval = window.setInterval(() => {
-        if (tryStart()) window.clearInterval(interval);
-      }, 600);
-      return () => {
-        cancelled = true;
-        window.clearInterval(interval);
-        stopSound("synth-pad", 400);
-      };
-    }
-    return () => {
-      cancelled = true;
-      stopSound("synth-pad", 400);
-    };
-  }, []);
 
   return (
     <section className="relative w-full overflow-hidden bg-[#0a0814] text-brand-text-dark md:h-full">

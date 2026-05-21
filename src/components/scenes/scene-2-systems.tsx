@@ -1,12 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
 import { SceneCopyPanel } from "@/components/scenes/scene-copy-panel";
 import { SimpleIconStrip, LucideStrip } from "@/components/scenes/detail-strip";
 import { CorridorFallback } from "@/components/scenes/fallbacks/corridor-fallback";
 import { useSceneScroll } from "@/components/scenes/scene-scroll-context";
-import { isUnlocked, playSound, stopSound } from "@/lib/audio";
 import { usePrefersReducedMotion } from "@/lib/device-tier";
 import { SCENE_2_PLATFORMS, SCENE_2_VERTICALS } from "@/lib/scene-content";
 
@@ -24,30 +22,6 @@ const BULLETS = [
 export function Scene2Systems() {
   const reduced = usePrefersReducedMotion();
   const contentRef = useSceneScroll();
-
-  useEffect(() => {
-    let cancelled = false;
-    function tryStart() {
-      if (cancelled) return false;
-      if (!isUnlocked()) return false;
-      playSound("server-hum", { fadeIn: 800, volume: 0.28 });
-      return true;
-    }
-    if (!tryStart()) {
-      const interval = window.setInterval(() => {
-        if (tryStart()) window.clearInterval(interval);
-      }, 600);
-      return () => {
-        cancelled = true;
-        window.clearInterval(interval);
-        stopSound("server-hum", 400);
-      };
-    }
-    return () => {
-      cancelled = true;
-      stopSound("server-hum", 400);
-    };
-  }, []);
 
   return (
     <section className="relative w-full overflow-hidden bg-[#020a13] text-brand-text-dark md:h-full">

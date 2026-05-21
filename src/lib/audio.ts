@@ -5,15 +5,11 @@ import { Howl, Howler } from "howler";
 
 const MUTED_KEY = "cr-marketing-muted";
 
-export type SoundName =
-  | "keyboard-loop"
-  | "synth-pad"
-  | "server-hum"
-  | "call-center-ambience"
-  | "city-night"
-  | "click"
-  | "lead-captured"
-  | "data-blip";
+// Howler is now reserved for one-shot SFX only. Continuous ambient music
+// + Scene 0 keyboard clicks are handled procedurally by Tone.js
+// (src/lib/audio-music.ts), so the looped slot names previously listed
+// here have been removed.
+export type SoundName = "click" | "lead-captured" | "data-blip";
 
 type SoundEntry = {
   howl: Howl;

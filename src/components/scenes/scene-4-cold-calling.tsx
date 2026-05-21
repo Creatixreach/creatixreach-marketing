@@ -1,12 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { SceneCopyPanel } from "@/components/scenes/scene-copy-panel";
 import { SkylineFallback } from "@/components/scenes/fallbacks/skyline-fallback";
 import { useSceneScroll } from "@/components/scenes/scene-scroll-context";
-import { isUnlocked, playSound, stopSound } from "@/lib/audio";
 import { usePrefersReducedMotion } from "@/lib/device-tier";
 import { SCENE_4_PRICING, SCENE_4_STATS } from "@/lib/scene-content";
 
@@ -79,30 +77,6 @@ function AchievementStats() {
 export function Scene4ColdCalling() {
   const reduced = usePrefersReducedMotion();
   const contentRef = useSceneScroll();
-
-  useEffect(() => {
-    let cancelled = false;
-    function tryStart() {
-      if (cancelled) return false;
-      if (!isUnlocked()) return false;
-      playSound("city-night", { fadeIn: 800, volume: 0.28 });
-      return true;
-    }
-    if (!tryStart()) {
-      const interval = window.setInterval(() => {
-        if (tryStart()) window.clearInterval(interval);
-      }, 600);
-      return () => {
-        cancelled = true;
-        window.clearInterval(interval);
-        stopSound("city-night", 400);
-      };
-    }
-    return () => {
-      cancelled = true;
-      stopSound("city-night", 400);
-    };
-  }, []);
 
   return (
     <section className="relative w-full overflow-hidden bg-[#050813] text-brand-text-dark md:h-full">
