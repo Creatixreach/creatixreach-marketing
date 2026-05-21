@@ -58,8 +58,10 @@ export function Scene0Hero() {
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden bg-brand-navy text-brand-text-dark md:h-full md:min-h-0">
-      {/* 3D scene: dim coding room — fills the entire hero. */}
-      <div className="pointer-events-none absolute inset-0 z-0">
+      {/* 3D scene: dim coding room. Fixed full-viewport on mobile so it sits
+       *  behind scroll content; absolutely-positioned inside the scene on
+       *  desktop where SceneStage already locks the viewport. */}
+      <div className="pointer-events-none fixed inset-0 z-0 md:absolute md:inset-0">
         {reduced ? (
           <MonitorsFallback className="h-full w-full" />
         ) : (
@@ -67,10 +69,10 @@ export function Scene0Hero() {
         )}
       </div>
 
-      {/* Subtle vignette to keep the copy panel readable */}
+      {/* Desktop-only vignette — mobile uses the SceneStage navy/30 overlay */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_center,rgba(11,18,36,0)_0%,rgba(11,18,36,0.55)_65%,rgba(11,18,36,0.95)_100%)]"
+        className="pointer-events-none hidden bg-[radial-gradient(ellipse_at_center,rgba(11,18,36,0)_0%,rgba(11,18,36,0.55)_65%,rgba(11,18,36,0.95)_100%)] md:absolute md:inset-0 md:z-[1] md:block"
       />
 
       {/* Copy panel */}

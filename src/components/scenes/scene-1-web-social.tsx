@@ -51,8 +51,8 @@ export function Scene1WebSocial() {
 
   return (
     <section className="relative w-full overflow-hidden bg-[#0a0814] text-brand-text-dark md:h-full">
-      {/* 3D backdrop — top preview on mobile, full-bleed on desktop */}
-      <div className="pointer-events-none relative z-0 h-[45vh] w-full md:absolute md:inset-0 md:h-full">
+      {/* 3D backdrop — fixed full-viewport on mobile, absolute fill on desktop */}
+      <div className="pointer-events-none fixed inset-0 z-0 md:absolute md:inset-0">
         {reduced ? (
           <StudioFallback className="h-full w-full" />
         ) : (

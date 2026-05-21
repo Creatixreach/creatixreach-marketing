@@ -23,21 +23,30 @@ export function SceneStage() {
   const Current = SCENES[currentScene] ?? Scene0Hero;
 
   return (
-    // Mobile: inline block in normal page flow (page scrolls).
-    // Desktop: fixed full viewport, no page scroll.
-    <div className="relative w-full bg-brand-navy md:fixed md:inset-0 md:overflow-hidden">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentScene}
-          className="relative w-full md:absolute md:inset-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.4, ease: "easeInOut" }}
-        >
-          <Current />
-        </motion.div>
-      </AnimatePresence>
-    </div>
+    <>
+      {/* Mobile-only subtle navy tint between the fixed Canvas and the
+       *  scrollable content for text readability. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-[5] bg-brand-navy/30 md:hidden"
+      />
+
+      {/* Mobile: inline block in normal page flow (page scrolls).
+       *  Desktop: fixed full viewport, no page scroll. */}
+      <div className="relative w-full bg-brand-navy md:fixed md:inset-0 md:overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentScene}
+            className="relative w-full md:absolute md:inset-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+          >
+            <Current />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </>
   );
 }

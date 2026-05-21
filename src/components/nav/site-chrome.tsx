@@ -42,7 +42,7 @@ export function SiteChrome() {
   return (
     <>
       {/* Top-left: logo */}
-      <div className="pointer-events-none fixed left-0 right-0 top-0 z-40 flex items-start justify-between px-6 pt-5 sm:px-10 sm:pt-7">
+      <div className="pointer-events-none fixed left-0 right-0 top-0 z-50 flex items-start justify-between px-6 pt-5 sm:px-10 sm:pt-7">
         <a
           href="/"
           className="pointer-events-auto inline-flex rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-indigo focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
@@ -76,7 +76,7 @@ export function SiteChrome() {
        *  a transparent overlay over the fixed scene. The dual-axis nav hint
        *  lives in the copy panel on desktop and here on mobile so it stays
        *  visible while the user scrolls within a scene. */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex flex-col items-center gap-2 bg-gradient-to-t from-brand-navy/85 via-brand-navy/55 to-transparent px-4 pb-5 pt-6 backdrop-blur-sm md:bg-none md:px-0 md:pb-6 md:pt-0 md:backdrop-blur-0">
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex flex-col items-center gap-2 bg-gradient-to-t from-brand-navy/85 via-brand-navy/55 to-transparent px-4 pb-5 pt-6 backdrop-blur-sm md:bg-none md:px-0 md:pb-6 md:pt-0 md:backdrop-blur-0">
         <div className="pointer-events-auto text-xs uppercase tracking-[0.3em] text-brand-muted-dark">
           <span className="text-white">{formatIndex(currentScene + 1)}</span>
           <span className="mx-2 text-white/40">/</span>
@@ -112,7 +112,7 @@ export function SiteChrome() {
       </div>
 
       {/* Bottom-right: floating WhatsApp FAB */}
-      <div className="pointer-events-none fixed bottom-6 right-6 z-40 sm:bottom-8 sm:right-8">
+      <div className="pointer-events-none fixed bottom-6 right-6 z-50 sm:bottom-8 sm:right-8">
         <div className="pointer-events-auto">
           <WhatsappButton href={waHref} />
         </div>

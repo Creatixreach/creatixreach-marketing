@@ -51,7 +51,7 @@ export function Scene2Systems() {
 
   return (
     <section className="relative w-full overflow-hidden bg-[#020a13] text-brand-text-dark md:h-full">
-      <div className="pointer-events-none relative z-0 h-[45vh] w-full md:absolute md:inset-0 md:h-full">
+      <div className="pointer-events-none fixed inset-0 z-0 md:absolute md:inset-0">
         {reduced ? (
           <CorridorFallback className="h-full w-full" />
         ) : (

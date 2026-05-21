@@ -50,7 +50,7 @@ export function Scene3Dialer() {
 
   return (
     <section className="relative w-full overflow-hidden bg-[#0d0820] text-brand-text-dark md:h-full">
-      <div className="pointer-events-none relative z-0 h-[45vh] w-full md:absolute md:inset-0 md:h-full">
+      <div className="pointer-events-none fixed inset-0 z-0 md:absolute md:inset-0">
         {reduced ? (
           <CallFloorFallback className="h-full w-full" />
         ) : (

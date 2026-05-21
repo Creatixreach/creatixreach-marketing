@@ -106,7 +106,7 @@ export function Scene4ColdCalling() {
 
   return (
     <section className="relative w-full overflow-hidden bg-[#050813] text-brand-text-dark md:h-full">
-      <div className="pointer-events-none relative z-0 h-[45vh] w-full md:absolute md:inset-0 md:h-full">
+      <div className="pointer-events-none fixed inset-0 z-0 md:absolute md:inset-0">
         {reduced ? (
           <SkylineFallback className="h-full w-full" />
         ) : (

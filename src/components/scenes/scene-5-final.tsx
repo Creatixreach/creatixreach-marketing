@@ -91,8 +91,8 @@ export function Scene5Final() {
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden bg-[#040414] text-brand-text-dark md:h-full md:min-h-0">
-      {/* 3D backdrop — fixed behind the scrollable foreground */}
-      <div className="pointer-events-none absolute inset-0 z-0">
+      {/* 3D backdrop — fixed full-viewport on mobile, absolute fill on desktop */}
+      <div className="pointer-events-none fixed inset-0 z-0 md:absolute md:inset-0">
         {reduced ? (
           <FinalFallback className="h-full w-full" />
         ) : (
