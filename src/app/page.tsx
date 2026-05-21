@@ -18,7 +18,10 @@ export default function HomePage() {
   useEffect(() => setReady(true), []);
 
   return (
-    <main className="relative w-screen bg-brand-navy text-brand-text-dark md:h-screen md:overflow-hidden">
+    <main
+      className="relative w-screen bg-brand-navy text-brand-text-dark md:h-screen md:overflow-hidden"
+      style={{ touchAction: "pan-y" }}
+    >
       {!ready && <InitialLoader />}
       <SceneController>
         <SceneStage />

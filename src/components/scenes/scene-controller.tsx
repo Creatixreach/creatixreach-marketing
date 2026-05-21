@@ -17,7 +17,15 @@ import {
 
 const TOTAL_SCENES = 6;
 const SCROLL_DEBOUNCE_MS = 400;
-const SWIPE_THRESHOLD_PX = 60;
+// Swipe thresholds — Phase 9 tuning.
+// Distance: a full deliberate swipe is >= 35px horizontal travel.
+// Velocity flick: short, fast horizontal flicks register at >15px if the
+// velocity exceeds FAST_FLICK_VELOCITY (px per ms).
+const SWIPE_DISTANCE_PX = 35;
+const SWIPE_FAST_FLICK_DISTANCE_PX = 15;
+const SWIPE_FAST_FLICK_VELOCITY = 0.5; // px per ms
+const SWIPE_HORIZONTAL_DOMINANCE = 1.2; // |dx| > 1.2 * |dy| reads as horizontal
+const SWIPE_MAX_DURATION_MS = 600; // anything slower is treated as a drag/scroll
 const CONTENT_SCROLL_STEP_PX = 120;
 
 type SceneContextValue = {
@@ -111,9 +119,12 @@ function SceneInputs({ next, prev }: { next: () => void; prev: () => void }) {
 
   // Touch / pointer swipe (horizontal). Vertical inside the content panel is
   // skipped by isInteractiveTarget, so the native scroller handles it.
+  //
+  // Phase 9: more forgiving thresholds + velocity-aware fast flick path.
   useEffect(() => {
     let startX = 0;
     let startY = 0;
+    let startT = 0;
     let tracking = false;
 
     function onDown(e: PointerEvent) {
@@ -121,6 +132,7 @@ function SceneInputs({ next, prev }: { next: () => void; prev: () => void }) {
       if (isInteractiveTarget(e.target)) return;
       startX = e.clientX;
       startY = e.clientY;
+      startT = performance.now();
       tracking = true;
     }
     function onUp(e: PointerEvent) {
@@ -128,8 +140,20 @@ function SceneInputs({ next, prev }: { next: () => void; prev: () => void }) {
       tracking = false;
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
-      if (Math.abs(dx) < SWIPE_THRESHOLD_PX) return;
-      if (Math.abs(dy) > Math.abs(dx)) return; // mostly vertical
+      const dt = performance.now() - startT;
+
+      // Too slow → user is scrolling/dragging, not flicking between scenes.
+      if (dt > SWIPE_MAX_DURATION_MS) return;
+      // Must be horizontal-dominant (less strict than 1:1).
+      if (Math.abs(dx) <= SWIPE_HORIZONTAL_DOMINANCE * Math.abs(dy)) return;
+
+      const velocity = Math.abs(dx) / Math.max(dt, 1);
+      const isFastFlick =
+        velocity > SWIPE_FAST_FLICK_VELOCITY &&
+        Math.abs(dx) > SWIPE_FAST_FLICK_DISTANCE_PX;
+      const isFullSwipe = Math.abs(dx) >= SWIPE_DISTANCE_PX;
+      if (!isFastFlick && !isFullSwipe) return;
+
       if (dx < 0) next();
       else prev();
     }
