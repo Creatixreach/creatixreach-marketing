@@ -64,7 +64,7 @@ export function Scene3Dialer() {
       />
 
       <div className="relative z-20 flex flex-col md:h-full md:flex-row">
-        <div className="flex w-full shrink-0 items-center justify-center px-6 py-10 md:w-[42%] md:max-w-[520px] md:px-12 md:py-0">
+        <div className="flex w-full shrink-0 items-center justify-center px-6 pb-10 pt-24 md:w-[42%] md:max-w-[520px] md:px-12 md:py-0">
           <SceneCopyPanel
             index={3}
             flag="Our flagship product · CreatixReach Dialer"

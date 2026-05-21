@@ -75,9 +75,12 @@ export function Scene0Hero() {
         className="pointer-events-none hidden bg-[radial-gradient(ellipse_at_center,rgba(11,18,36,0)_0%,rgba(11,18,36,0.55)_65%,rgba(11,18,36,0.95)_100%)] md:absolute md:inset-0 md:z-[1] md:block"
       />
 
-      {/* Copy panel */}
-      <div className="relative z-20 flex h-full items-end justify-center px-6 pb-32 sm:items-center sm:pb-0">
-        <GlassPanel className="w-full max-w-[520px] p-6 sm:p-8">
+      {/* Copy panel — Scene 0 has no scrollable content, so on mobile we
+       *  pin it to the vertical center of the viewport while the coding-room
+       *  background animates behind it. Desktop keeps the existing flex
+       *  centered layout inside the scene section. */}
+      <div className="fixed left-4 right-4 top-1/2 z-30 -translate-y-1/2 px-0 md:relative md:left-auto md:right-auto md:top-auto md:z-20 md:flex md:h-full md:translate-y-0 md:items-center md:justify-center md:px-6">
+        <GlassPanel className="mx-auto w-full max-w-[520px] p-6 sm:p-8">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-brand-muted-dark">
             <span className="h-1.5 w-1.5 rounded-full bg-brand-indigo" />
             01 / 06
