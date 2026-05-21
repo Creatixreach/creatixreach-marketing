@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { CrtMonitor, type MonitorContent } from "@/components/scenes/three/crt-monitor";
 import { DeskAndFloor } from "@/components/scenes/three/desk-and-floor";
 import { CodeAtmosphere } from "@/components/scenes/three/code-atmosphere";
+import { SceneLighting } from "@/components/scenes/three/scene-lighting";
 
 const MONITORS: MonitorContent[] = [
   {
@@ -68,7 +69,7 @@ function MonitorsScene() {
       {/* Brand-navy fog so distant geometry dissolves into the room */}
       <fogExp2 attach="fog" args={["#0b1224", 0.08]} />
 
-      <ambientLight intensity={0.35} />
+      <SceneLighting />
 
       <CodeAtmosphere />
       <DeskAndFloor />
