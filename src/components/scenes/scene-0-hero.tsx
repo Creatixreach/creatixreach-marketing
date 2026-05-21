@@ -74,7 +74,7 @@ export function Scene0Hero() {
 
       {/* Copy panel */}
       <div className="relative z-20 flex h-full items-end justify-center px-6 pb-32 sm:items-center sm:pb-0">
-        <GlassPanel className="w-full max-w-2xl p-6 sm:p-10">
+        <GlassPanel className="w-full max-w-[520px] p-6 sm:p-8">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-brand-muted-dark">
             <span className="h-1.5 w-1.5 rounded-full bg-brand-indigo" />
             01 / 06
