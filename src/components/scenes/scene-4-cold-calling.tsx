@@ -7,6 +7,7 @@ import { SceneCopyPanel } from "@/components/scenes/scene-copy-panel";
 import { SkylineFallback } from "@/components/scenes/fallbacks/skyline-fallback";
 import { isUnlocked, playSound, stopSound } from "@/lib/audio";
 import { usePrefersReducedMotion } from "@/lib/device-tier";
+import { SCENE_4_PRICING, SCENE_4_STATS } from "@/lib/scene-content";
 
 const SkylineScene = dynamic(
   () => import("@/components/scenes/three/skyline-scene").then((m) => m.SkylineScene),
@@ -43,6 +44,61 @@ function useLeadCounter() {
   }, []);
 
   return count;
+}
+
+function PricingAnchor() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+      className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent p-6 sm:p-8"
+    >
+      {/* thin indigo top accent */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-indigo to-transparent" />
+      <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-baseline sm:gap-6">
+        <div className="font-serif text-6xl font-normal leading-none text-white sm:text-7xl">
+          {SCENE_4_PRICING.amount}
+        </div>
+        <div className="flex-1 space-y-1">
+          <div className="text-base font-medium text-white sm:text-lg">
+            {SCENE_4_PRICING.unit}
+          </div>
+          <p className="max-w-md text-sm leading-relaxed text-brand-muted-dark">
+            {SCENE_4_PRICING.detail}
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function AchievementStats() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.35, ease: "easeOut" }}
+      className="grid grid-cols-2 gap-4 lg:grid-cols-4"
+    >
+      {SCENE_4_STATS.map((s, i) => (
+        <motion.div
+          key={s.caption}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.45 + i * 0.08, ease: "easeOut" }}
+          className="rounded-xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-sm"
+        >
+          <div className="font-serif text-3xl font-normal leading-none text-white sm:text-4xl">
+            {s.display}
+          </div>
+          <div className="mt-2 text-[10px] font-medium uppercase tracking-[0.2em] text-brand-muted-dark">
+            {s.caption}
+          </div>
+        </motion.div>
+      ))}
+    </motion.div>
+  );
 }
 
 export function Scene4ColdCalling() {
@@ -93,7 +149,7 @@ export function Scene4ColdCalling() {
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
-        className="pointer-events-auto absolute right-4 top-20 z-20 hidden rounded-xl border border-amber-400/30 bg-black/30 px-4 py-3 text-right shadow-[0_0_30px_rgba(251,191,36,0.2)] backdrop-blur-sm sm:right-8 sm:top-24 sm:block"
+        className="pointer-events-auto absolute right-4 top-20 z-30 hidden rounded-xl border border-amber-400/30 bg-black/30 px-4 py-3 text-right shadow-[0_0_30px_rgba(251,191,36,0.2)] backdrop-blur-sm sm:right-8 sm:top-24 sm:block"
       >
         <div className="text-[10px] font-medium uppercase tracking-[0.25em] text-amber-300/80">
           Leads captured · today
@@ -110,15 +166,26 @@ export function Scene4ColdCalling() {
         </div>
       </motion.div>
 
-      <div className="relative z-20 flex h-full items-end justify-center px-6 pb-32 sm:items-center sm:justify-start sm:pb-0 sm:pl-16 lg:pl-24">
-        <SceneCopyPanel
-          index={4}
-          title="Cold Calling and Lead Generation"
-          sub="We don't just hand you a dialer. We run the campaigns."
-          bullets={BULLETS}
-          topic="cold-calling"
-          accent="bg-amber-400"
-        />
+      <div
+        data-scene-no-nav
+        className="relative z-20 h-full w-full overflow-y-auto"
+        style={{ overscrollBehavior: "contain" }}
+      >
+        <div className="mx-auto flex min-h-full w-full max-w-6xl flex-col gap-10 px-6 pb-40 pt-24 sm:px-10 sm:pt-24">
+          <div className="flex justify-center sm:justify-start sm:pl-2 lg:pl-8">
+            <SceneCopyPanel
+              index={4}
+              title="Cold Calling and Lead Generation"
+              sub="We don't just hand you a dialer. We run the campaigns."
+              bullets={BULLETS}
+              topic="cold-calling"
+              accent="bg-amber-400"
+            />
+          </div>
+
+          <PricingAnchor />
+          <AchievementStats />
+        </div>
       </div>
     </section>
   );
