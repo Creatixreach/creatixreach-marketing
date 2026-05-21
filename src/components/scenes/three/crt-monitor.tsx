@@ -20,8 +20,8 @@ function makeScreenTexture(content: MonitorContent): THREE.CanvasTexture {
   canvas.height = h;
   const ctx = canvas.getContext("2d")!;
 
-  // base screen (CRT dark phosphor)
-  ctx.fillStyle = "#04060d";
+  // base screen — pure black for max emissive contrast
+  ctx.fillStyle = "#000000";
   ctx.fillRect(0, 0, w, h);
 
   // scanlines
