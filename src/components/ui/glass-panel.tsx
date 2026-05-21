@@ -8,12 +8,13 @@ export const GlassPanel = forwardRef<HTMLDivElement, GlassPanelProps>(
     return (
       <div
         ref={ref}
+        style={{ boxShadow: "0 0 40px rgba(79, 70, 229, 0.15), 0 20px 40px rgba(0,0,0,0.45)" }}
         className={cn(
-          // base shape + lightened blur + lower bg opacity so the scene reads through
-          "relative isolate overflow-hidden rounded-2xl bg-white/[0.03] shadow-2xl backdrop-blur-md",
-          // gradient border via ::before mask trick
+          // base shape + very light blur + very low bg opacity so the scene reads through
+          "relative isolate overflow-hidden rounded-2xl bg-white/[0.02] backdrop-blur-sm",
+          // gradient border via ::before mask trick — indigo at higher contrast
           "before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:rounded-2xl before:p-px",
-          "before:bg-[linear-gradient(140deg,rgba(124,131,255,0.55),rgba(255,255,255,0.08)_45%,rgba(124,131,255,0.18)_100%)]",
+          "before:bg-[linear-gradient(140deg,rgba(99,102,241,0.6),rgba(255,255,255,0.1)_45%,rgba(99,102,241,0.25)_100%)]",
           "before:[mask:linear-gradient(#000_0_0)_content-box,linear-gradient(#000_0_0)]",
           "before:[-webkit-mask-composite:xor] before:[mask-composite:exclude]",
           // inner top highlight (1px light-catch)
