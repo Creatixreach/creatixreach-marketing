@@ -7,7 +7,6 @@ import { ArrowRight } from "lucide-react";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { CtaButton } from "@/components/ui/cta-button";
 import { WhatsappIcon } from "@/components/ui/whatsapp-icon";
-import { CodeRain } from "@/components/scenes/code-rain";
 import { MonitorsFallback } from "@/components/scenes/monitors-fallback";
 import { isUnlocked, playSound, stopSound } from "@/lib/audio";
 import { whatsappUrl } from "@/lib/cta-messages";
@@ -58,23 +57,20 @@ export function Scene0Hero() {
 
   return (
     <section className="relative h-full w-full overflow-hidden bg-brand-navy text-brand-text-dark">
-      {/* Background: code rain canvas */}
-      <CodeRain className="absolute inset-0 h-full w-full opacity-70" />
-
-      {/* Subtle vignette */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(15,23,42,0)_0%,rgba(15,23,42,0.55)_60%,rgba(15,23,42,0.9)_100%)]"
-      />
-
-      {/* Foreground: 3D monitors (or static fallback) */}
-      <div className="pointer-events-none absolute inset-x-0 top-[12%] z-10 flex h-[40vh] items-center justify-center sm:top-[8%] sm:h-[46vh]">
+      {/* 3D scene: dim coding room — fills the entire hero. */}
+      <div className="pointer-events-none absolute inset-0 z-0">
         {reduced ? (
           <MonitorsFallback className="h-full w-full" />
         ) : (
           <FloatingMonitors className="h-full w-full" />
         )}
       </div>
+
+      {/* Subtle vignette to keep the copy panel readable */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_center,rgba(11,18,36,0)_0%,rgba(11,18,36,0.55)_65%,rgba(11,18,36,0.95)_100%)]"
+      />
 
       {/* Copy panel */}
       <div className="relative z-20 flex h-full items-end justify-center px-6 pb-32 sm:items-center sm:pb-0">
