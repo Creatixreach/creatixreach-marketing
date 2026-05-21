@@ -9,6 +9,7 @@ import { CtaButton } from "@/components/ui/cta-button";
 import { WhatsappIcon } from "@/components/ui/whatsapp-icon";
 import { MonitorsFallback } from "@/components/scenes/monitors-fallback";
 import { SceneNavHint } from "@/components/scenes/scene-nav-hint";
+import { SceneArrowButtons } from "@/components/scenes/scene-arrow-buttons";
 import { isMuted, isUnlocked } from "@/lib/audio";
 import { playKeyboardClick } from "@/lib/audio-music";
 import { whatsappUrl } from "@/lib/cta-messages";
@@ -144,6 +145,8 @@ export function Scene0Hero() {
               <ArrowRight className="h-4 w-4" />
             </CtaButton>
           </motion.div>
+
+          <SceneArrowButtons />
 
           <motion.div
             initial={{ opacity: 0 }}

@@ -7,6 +7,7 @@ import { Logo } from "@/components/branding/logo";
 import { ContactForm } from "@/components/contact/contact-form";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { useScene } from "@/components/scenes/scene-controller";
+import { SceneArrowButtons } from "@/components/scenes/scene-arrow-buttons";
 import { FinalFallback } from "@/components/scenes/fallbacks/final-fallback";
 import { usePrefersReducedMotion } from "@/lib/device-tier";
 
@@ -115,6 +116,10 @@ export function Scene5Final() {
               Four rooms, one team. Tap a service to revisit it, or send a brief
               right here.
             </motion.p>
+
+            <div className="mx-auto max-w-xs">
+              <SceneArrowButtons />
+            </div>
           </div>
 
           {/* Recap card grid */}

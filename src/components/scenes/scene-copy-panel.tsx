@@ -7,6 +7,7 @@ import { GlassPanel } from "@/components/ui/glass-panel";
 import { CtaButton } from "@/components/ui/cta-button";
 import { WhatsappIcon } from "@/components/ui/whatsapp-icon";
 import { SceneNavHint } from "@/components/scenes/scene-nav-hint";
+import { SceneArrowButtons } from "@/components/scenes/scene-arrow-buttons";
 import { whatsappUrl, type CtaTopic } from "@/lib/cta-messages";
 
 export type SceneCopyPanelProps = {
@@ -149,6 +150,8 @@ export function SceneCopyPanel({
           )}
         </motion.div>
       )}
+
+      <SceneArrowButtons />
 
       <motion.div
         initial={{ opacity: 0 }}
