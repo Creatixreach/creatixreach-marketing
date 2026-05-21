@@ -25,19 +25,9 @@ function formatIndex(n: number) {
 export function SiteChrome() {
   const { currentScene, totalScenes, goTo } = useScene();
   const [muted, setMuted] = useState(false);
-  const [isCoarse, setIsCoarse] = useState(false);
 
   useEffect(() => {
     setMuted(isMuted());
-    const mql = window.matchMedia("(pointer: coarse)");
-    setIsCoarse(mql.matches);
-    const onChange = (e: MediaQueryListEvent) => setIsCoarse(e.matches);
-    if (mql.addEventListener) mql.addEventListener("change", onChange);
-    else mql.addListener(onChange);
-    return () => {
-      if (mql.removeEventListener) mql.removeEventListener("change", onChange);
-      else mql.removeListener(onChange);
-    };
   }, []);
 
   function onToggleMute() {
@@ -80,15 +70,14 @@ export function SiteChrome() {
         </div>
       </div>
 
-      {/* Bottom-center: scene index + caption */}
+      {/* Bottom-center: scene index + progress dots.
+       *  The "Use arrow keys to navigate" hint moved into each scene's copy
+       *  panel as a dual-axis (← → and ↑ ↓) caption in Phase 6. */}
       <div className="pointer-events-none fixed inset-x-0 bottom-6 z-40 flex flex-col items-center gap-3">
         <div className="pointer-events-auto text-xs uppercase tracking-[0.3em] text-brand-muted-dark">
           <span className="text-white">{formatIndex(currentScene + 1)}</span>
           <span className="mx-2 text-white/40">/</span>
           <span>{formatIndex(totalScenes)}</span>
-        </div>
-        <div className="pointer-events-auto text-[10px] uppercase tracking-[0.25em] text-brand-muted-dark sm:text-[11px]">
-          {isCoarse ? "Swipe to navigate" : "Use arrow keys to navigate"}
         </div>
 
         {/* Progress dots — active scene is a wider pill (16x4), others 4x4 round */}

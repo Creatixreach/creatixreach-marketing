@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { CtaButton } from "@/components/ui/cta-button";
 import { WhatsappIcon } from "@/components/ui/whatsapp-icon";
+import { SceneNavHint } from "@/components/scenes/scene-nav-hint";
 import { whatsappUrl, type CtaTopic } from "@/lib/cta-messages";
 
 export type SceneCopyPanelProps = {
@@ -148,6 +149,14 @@ export function SceneCopyPanel({
           )}
         </motion.div>
       )}
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 1.05, ease: "easeOut" }}
+      >
+        <SceneNavHint />
+      </motion.div>
     </GlassPanel>
   );
 }
