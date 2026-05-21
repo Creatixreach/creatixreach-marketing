@@ -36,7 +36,7 @@ export function SceneEnvironment({ enabled = true }: SceneEnvironmentProps) {
           radialModulation={false}
           modulationOffset={0}
         />
-        <Vignette eskil={false} offset={0.3} darkness={0.6} />
+        <Vignette eskil={false} offset={0.25} darkness={0.95} />
         <Noise opacity={0.04} premultiply />
       </EffectComposer>
     </>

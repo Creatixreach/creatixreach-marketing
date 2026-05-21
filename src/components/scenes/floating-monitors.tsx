@@ -124,7 +124,7 @@ function MonitorsScene({ effectsEnabled }: { effectsEnabled: boolean }) {
   return (
     <>
       {/* Brand-navy fog so distant geometry dissolves into the room */}
-      <fogExp2 attach="fog" args={["#0b1224", 0.08]} />
+      <fogExp2 attach="fog" args={["#0f172a", 0.14]} />
 
       <CameraRig />
       <SceneLighting />
