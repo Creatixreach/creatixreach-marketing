@@ -144,49 +144,78 @@ export async function submitContactAction(
     message: data.message,
   });
 
+  // Notification email (best-effort).
+  let emailSent = false;
   const client = getResend();
   if (!client) {
     console.error("[marketing-contact] RESEND_API_KEY not configured");
-    return {
-      ok: false,
-      error:
-        "Couldn't send. Please WhatsApp us instead at +1 323 297 8843.",
-    };
-  }
-
-  console.log(
-    `[marketing-contact] sending to ${recipients.join(",")} subject="${subject}"`
-  );
-
-  try {
-    const result = await client.emails.send({
-      from: FROM_SALES,
-      to: recipients,
-      replyTo: data.email,
-      subject,
-      html,
-    });
-
-    // Resend can return 200 with an error object - check explicitly (portal gotcha #167)
-    if (result.error) {
-      console.error(
-        "[marketing-contact] resend error",
-        JSON.stringify(result.error)
-      );
-      return {
-        ok: false,
-        error: "Couldn't send. Please WhatsApp us instead.",
-      };
+  } else {
+    try {
+      const result = await client.emails.send({
+        from: FROM_SALES,
+        to: recipients,
+        replyTo: data.email,
+        subject,
+        html,
+      });
+      if (result.error) {
+        console.error(
+          "[marketing-contact] resend error",
+          JSON.stringify(result.error)
+        );
+      } else {
+        emailSent = true;
+        console.log(`[marketing-contact] sent, id=${result.data?.id}`);
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error("[marketing-contact] throw", msg);
     }
-
-    console.log(`[marketing-contact] sent, id=${result.data?.id}`);
-    return { ok: true };
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    console.error("[marketing-contact] throw", msg);
-    return {
-      ok: false,
-      error: "Couldn't send. Please WhatsApp us instead.",
-    };
   }
+
+  // Durable backup: send the lead to the portal so it is saved in the
+  // shared admin list, even if the notification email fails.
+  let saved = false;
+  const ingestSecret = process.env.LEADS_INGEST_SECRET;
+  if (!ingestSecret) {
+    console.error("[marketing-contact] LEADS_INGEST_SECRET not configured");
+  } else {
+    try {
+      const res = await fetch("https://app.creatixreach.io/api/leads", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-leads-secret": ingestSecret,
+        },
+        body: JSON.stringify({
+          source: "marketing",
+          name: data.name,
+          email: data.email,
+          company: data.company || null,
+          phone: data.phone || null,
+          message:
+            "Topic: " +
+            topicLabel +
+            (data.budget ? " | Budget: " + data.budget : "") +
+            "\n\n" +
+            data.message,
+          emailSent,
+        }),
+      });
+      saved = res.ok;
+      if (!res.ok) {
+        console.error("[marketing-contact] ingest failed", res.status);
+      }
+    } catch (e) {
+      console.error("[marketing-contact] ingest threw", e);
+    }
+  }
+
+  if (emailSent || saved) {
+    return { ok: true };
+  }
+  return {
+    ok: false,
+    error: "Couldn't send. Please WhatsApp us instead.",
+  };
 }
