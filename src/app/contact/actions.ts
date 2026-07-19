@@ -108,12 +108,6 @@ function buildEmailHtml(input: {
 export async function submitContactAction(
   formData: FormData
 ): Promise<ContactActionResult> {
-  // Honeypot - silently succeed if filled
-  const honeypot = formData.get("_honey")?.toString() ?? "";
-  if (honeypot.length > 0) {
-    return { ok: true };
-  }
-
   const parsed = ContactSchema.safeParse({
     name: formData.get("name")?.toString() ?? "",
     email: formData.get("email")?.toString() ?? "",

@@ -62,16 +62,6 @@ export function ContactForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5 text-brand-text-dark">
-      {/* Honeypot - hidden from real users, bots fill it */}
-      <input
-        type="text"
-        name="_honey"
-        tabIndex={-1}
-        autoComplete="off"
-        className="absolute -left-[9999px] h-0 w-0 opacity-0"
-        aria-hidden="true"
-      />
-
       <div className="grid gap-5 sm:grid-cols-2">
         <Field
           label="Your name"
