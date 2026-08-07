@@ -438,23 +438,30 @@ html.no-js .slate { display: none; }
   pointer-events: none;
   opacity: var(--lens-a);
   transition: opacity .6s ease;
+  /* Tighter and lighter than the first pass, which read as a muddy
+     thumbprint on the wall rather than a lens. */
   background:
     radial-gradient(circle var(--lens-r) at var(--mx) var(--my),
-      rgba(38, 44, 34, .16) 0%,
-      rgba(38, 44, 34, .10) 40%,
-      rgba(38, 44, 34, .035) 64%,
-      transparent 76%);
+      rgba(46, 52, 40, .10) 0%,
+      rgba(46, 52, 40, .075) 52%,
+      rgba(46, 52, 40, .03) 74%,
+      transparent 88%);
   mix-blend-mode: multiply;
 }
 
 /* Anything inside this wrapper is only visible where the lens is
    pointing. This is the "the wall was never empty" effect and it is
    a mask, not a per-frame redraw. */
+/* The mask holds FULL opacity out to 55% before it starts falling
+   away. The first version faded from the very centre, so even the
+   insects directly under the lens were half-transparent and the whole
+   act read as empty. A lens is sharp in the middle; only the rim
+   should soften. */
 .hidden-life {
-  -webkit-mask-image: radial-gradient(circle calc(var(--lens-r) * .84) at var(--mx) var(--my),
-    #000 0%, rgba(0, 0, 0, .78) 46%, transparent 76%);
-  mask-image: radial-gradient(circle calc(var(--lens-r) * .84) at var(--mx) var(--my),
-    #000 0%, rgba(0, 0, 0, .78) 46%, transparent 76%);
+  -webkit-mask-image: radial-gradient(circle calc(var(--lens-r) * .9) at var(--mx) var(--my),
+    #000 0%, #000 55%, rgba(0, 0, 0, .6) 74%, transparent 92%);
+  mask-image: radial-gradient(circle calc(var(--lens-r) * .9) at var(--mx) var(--my),
+    #000 0%, #000 55%, rgba(0, 0, 0, .6) 74%, transparent 92%);
 }
 /* No pointer, no lens — a phone gets a slow automatic sweep instead,
    driven from script.js by the same two variables. */
@@ -735,6 +742,15 @@ html.no-js .slate { display: none; }
 /* the last cockroach */
 .lastbug {
   position: fixed;
+  /* top/left MUST be declared. A fixed element with `top: auto` is
+     laid out at its STATIC position — where it would have sat in
+     normal flow — and this element is the last thing in a 19,000px
+     document, so the browser was faithfully pinning it 19,000px below
+     the viewport. It was being created, animated and hovered
+     correctly the whole time; it was simply nowhere anyone could see.
+     Anchoring to 0,0 makes the GSAP transform the only thing
+     positioning it. */
+  top: 0; left: 0;
   z-index: 65;
   width: 30px; height: 30px;
   opacity: 0;

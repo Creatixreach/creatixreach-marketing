@@ -41,8 +41,16 @@
   var compact = window.matchMedia('(max-width: 900px)').matches;
 
   /* "lite" drops the effects whose cost is not worth their look on a
-     phone: film grain, gooey and displacement filters, glow blurs. */
-  var lite = coarse || compact || (navigator.hardwareConcurrency || 8) <= 4;
+     phone: film grain, gooey and displacement filters, glow blurs,
+     and 58% of the insects.
+
+     The core count threshold used to be <= 4, which is wrong: a
+     four-core desktop is completely ordinary and was silently getting
+     the phone build — half the swarm missing and no grain — on a
+     machine perfectly able to run the real thing. Screen size and
+     pointer type are the honest signals for "this is a small device";
+     core count is only worth consulting at the genuine bottom end. */
+  var lite = coarse || compact || (navigator.hardwareConcurrency || 8) <= 2;
 
   var hasGSAP = (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined');
 
@@ -647,7 +655,7 @@
        viewport meant the lens usually found nothing and the promise
        in the copy went unpaid. Density has to be set against the
        REVEALED area, not the canvas. */
-    dark:   { count: 95,  kinds: ['roach', 'spider', 'silverfish'], size: [0.9, 1.5], speed: [10, 26],
+    dark:   { count: 150, kinds: ['roach', 'spider', 'silverfish'], size: [1.15, 1.9], speed: [10, 26],
               ramp: function (p) { return 1; },
               speedScale: function (p) { return 1 + p * 9; } },      /* they scatter as you scroll */
     house:  { count: 90,  kinds: ['roach', 'ant', 'silverfish', 'spider'], size: [0.7, 1.15], speed: [12, 30],
@@ -829,6 +837,32 @@
 
     el.appendChild(wrap);
     el.dataset.done = '1';
+    return chars;
+  }
+
+  /* Reveal a shot's headline on its OWN enter trigger, not on the
+     shot timeline.
+
+     This is the subtle one. A shot's scrubbed timeline does not start
+     until the section reaches the top of the viewport — but the
+     section scrolls up into full view a whole viewport-height BEFORE
+     that. During that entire stretch a scrub-driven headline is still
+     sitting at opacity 0, so the reader is looking at a plaster card
+     with a hole punched in the middle of it. Every act had it.
+
+     Reading is not an animation. It gets its own trigger, it fires
+     once on entry, and it is never a function of scrub position. */
+  function revealHeading(el) {
+    var h = el.querySelector('[data-split]');
+    if (!h) return [];
+    var chars = split(h);
+    gsap.set(chars, { yPercent: 110, opacity: 0 });
+    gsap.to(chars, {
+      yPercent: 0, opacity: 1,
+      duration: 0.7, ease: 'power3.out',
+      stagger: { each: 0.012 },
+      scrollTrigger: { trigger: el, start: 'top 80%', once: true }
+    });
     return chars;
   }
 
@@ -1034,7 +1068,7 @@
   SCENE['The house'] = function (tl, el) {
     var housePlate = $('[data-house]', el);
     var cavity = $('[data-cavity]', el);
-    var chars = split($('h2[data-split]', el));
+    revealHeading(el);
     var copy = $('.copy', el);
 
     /* MEASURED origin. #entry-house sits at 450,474 in the house
@@ -1042,19 +1076,27 @@
        the plate's live layout box on every refresh. */
     var org = function () { return originVB(housePlate, 1600, 900, 450, 474); };
 
-    /* Headlines land almost immediately, not a third of the way in.
-       The copy sits on a card that reserves its full height from the
-       first frame, so a late reveal is not "suspense" — it is a blank
-       panel with a hole in it. Read first, then animate. */
-    gsap.set(chars, { yPercent: 110, opacity: 0 });
-    tl.to(chars, { yPercent: 0, opacity: 1, duration: 0.16, stagger: 0.005, ease: 'power3.out' }, 0.01);
-
     /* Slow creep first. Cutting straight from rest into the push-in
        reads as a jump; the push has to accelerate out of something. */
     tl.fromTo(housePlate, { scale: 1 }, { scale: 2.05, transformOrigin: org, duration: 0.42 }, 0);
 
+    /* The slate label is DERIVED from progress, not fired by a
+       callback. A bare tl.add() callback runs in both directions, so
+       scrubbing back up through act 2 re-announced "Inside the cavity"
+       AFTER act 1 had already reclaimed the slate — leaving the HUD
+       lying about which act you were in. Anything that must survive a
+       reverse scroll has to be a function of position, not an event. */
     tl.to({}, { duration: 1, onUpdate: function () {
-      if (swarms.house) swarms.house.progress = this.progress();
+      var p = this.progress();
+      if (swarms.house) swarms.house.progress = p;
+      /* A shot may only write the HUD while it is the shot on screen.
+         scrub keeps a timeline settling for ~0.75s after its section
+         has left, so without this guard act 2 was still announcing
+         "Inside the cavity" over the top of act 4. */
+      var st = tl.scrollTrigger;
+      if (slateName && st && st.isActive) {
+        slateName.textContent = p > 0.62 ? 'Inside the cavity' : 'The house';
+      }
     } }, 0);
 
     tl.to(copy, { opacity: 0, duration: 0.14 }, 0.4);
@@ -1064,8 +1106,6 @@
     tl.to({}, { duration: 0.5, onUpdate: function () {
       if (swarms.cavity) swarms.cavity.progress = this.progress();
     } }, 0.44);
-
-    tl.add(function () { if (slateName) slateName.textContent = 'Inside the cavity'; }, 0.62);
 
     stageSwarm(el, ['house', 'cavity']);
   };
@@ -1077,7 +1117,7 @@
     var brood = $('[data-brood]', el);
     var walkers = $$('.walker', el);
     var rigs = $$('.spiderrig', el);
-    var chars = split($('h2[data-split]', el));
+    var chars = revealHeading(el);
     var head = $('h2[data-shake]', el);
 
     /* --- tunnels draw themselves on. dashoffset is scrubbed, so
@@ -1169,9 +1209,7 @@
       setGauge(0.15 + p * 0.85);
     } }, 0);
 
-    /* --- headline rises, then gets walked on --- */
-    gsap.set(chars, { yPercent: 110, opacity: 0 });
-    tl.to(chars, { yPercent: 0, opacity: 1, duration: 0.16, stagger: 0.005, ease: 'power3.out' }, 0.01);
+    /* --- the headline gets walked on --- */
     /* something lands on the text and it shakes. Random per letter,
        but seeded by index so the same scroll position shakes the same
        way both directions. */
@@ -1195,7 +1233,7 @@
     var op = $('[data-operator]', el);
     var cannon = $('[data-cannon]', el);
     var spray = $('[data-spray]', el);
-    var chars = split($('h2[data-split]', el));
+    revealHeading(el);
     var heatTurb = $('#heatTurb');
     var mistCv = $('[data-swarm="mist"]', el);
     var mistCtx = mistCv ? mistCv.getContext('2d') : null;
@@ -1210,11 +1248,9 @@
 
     gsap.set(op, { x: opX + 620, opacity: 0 });
     gsap.set(spray, { scaleX: 0, opacity: 0, transformOrigin: '100% 50%' });
-    gsap.set(chars, { yPercent: 110, opacity: 0 });
 
     /* operator walks in */
     tl.to(op, { x: opX, opacity: 1, duration: 0.3, ease: 'power3.out' }, 0.02);
-    tl.to(chars, { yPercent: 0, opacity: 1, duration: 0.16, stagger: 0.005, ease: 'power3.out' }, 0.01);
 
     /* the spray opens up */
     tl.to(spray, { scaleX: 1, opacity: 1, duration: 0.2, ease: 'power2.out' }, 0.3);
@@ -1360,10 +1396,7 @@
     var ladies = $$('.ladyrig', el);
     var glow = $('[data-dawn-glow]', el);
     var base = $('[data-dawn-base]', el);
-    var chars = split($('h2[data-split]', el));
-
-    gsap.set(chars, { yPercent: 110, opacity: 0 });
-    tl.to(chars, { yPercent: 0, opacity: 1, duration: 0.16, stagger: 0.005, ease: 'power3.out' }, 0.01);
+    revealHeading(el);
 
     /* birds cross the frame on scrubbed paths */
     birds.forEach(function (b, i) {
@@ -1421,7 +1454,7 @@
 
   /* ===== ACT 6 — HALCYON ===== */
   SCENE['Halcyon'] = function (tl, el) {
-    var chars = split($('h2[data-split]', el));
+    revealHeading(el);
     var glass = $('[data-glass]', el);
     var grass = $$('.clean-grass', el);
     var blooms = $$('.bloom', el);
@@ -1476,11 +1509,10 @@
     tl.to($('[data-blooms]', el), { opacity: 1, duration: 0.05 }, 0.3);
     tl.to(blooms, { scale: 1, rotation: 0, duration: 0.28, stagger: 0.035, ease: 'back.out(2)' }, 0.32);
 
-    /* headline + CTA */
-    gsap.set(chars, { yPercent: 110, opacity: 0 });
-    gsap.set(copy, { opacity: 0 });
-    tl.to(copy, { opacity: 1, duration: 0.08 }, 0.2);
-    tl.to(chars, { yPercent: 0, opacity: 1, duration: 0.18, stagger: 0.005, ease: 'power3.out' }, 0.22);
+    /* The copy is NOT faded in by the timeline. Same reason as the
+       headline: the act is on screen long before its scrub starts,
+       and a call-to-action you cannot read is not a call to
+       anything. It is present from the moment the act is. */
 
     /* pollen replaces spores */
     tl.to({}, { duration: 1, onUpdate: function () {
