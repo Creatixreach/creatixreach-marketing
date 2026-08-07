@@ -1,0 +1,838 @@
+/* ============================================================
+   HALCYON — pest control · demo 02
+   ------------------------------------------------------------
+   CAMERA IDEA (one per demo, stated once, obeyed everywhere):
+   The camera is a daylight survey. It moves the way an inspector's
+   hand moves — across a clean pale wall, into the cavity behind it,
+   under the floor, and finally back out into a house bright enough
+   that there is nowhere left to hide.
+
+   PALETTE — derived only from light sources that exist in this
+   subject's world. Nothing invented:
+     · North daylight on lime plaster -> --paper / --chalk. This is
+       the page. A pale wall is what a survey actually looks at.
+     · The insects themselves            -> --ink. Chitin is dark, and
+       against plaster it is the highest-contrast thing on screen.
+       That is the entire reason this page is light: you can SEE them.
+     · Hazard-orange kit                 -> --ember. Tank, hose, hi-vis.
+     · The garden that gets it back      -> --moss / --leaf.
+   Four sources. No accent colour was added for decoration.
+
+   THE GRADE moves with the story: acts 1-3 sit on dimmer, greyer,
+   dirtier plaster; act 6 opens out to the brightest white on the
+   page. The background IS the before-and-after.
+
+   TYPE
+     Instrument Serif — display. Elegance against crawling things is
+       the whole tension of the page.
+     Inter            — body.
+     DM Mono          — data, slate, specimen labels.
+
+   STRUCTURE OF THIS FILE
+     1. tokens
+     2. base document mode  <- what you get with no JS / reduced motion
+     3. cinema mode         <- .has-motion only, adds pinning + layers
+     4. chrome (brand bar, slate, cursor, lens, grain)
+     5. per-act artwork
+     6. responsive + reduced motion
+
+   IMPORTANT: base mode is the readable fallback and it is the DEFAULT.
+   Cinema mode is additive. That is why "load with JS disabled" and
+   "enable reduce motion" both pass by construction rather than by
+   a special case bolted on at the end.
+   ============================================================ */
+
+/* ---------- 1. tokens ---------- */
+
+:root {
+  --paper:  #F2EFE5;   /* lime plaster in north light — the page   */
+  --chalk:  #E9E5D8;   /* one step down, section separation        */
+  --stone:  #DCD7C6;   /* panels, cards                            */
+  --shade:  #C9C3AF;   /* borders, the edge of a shadow            */
+
+  --ink:    #191E17;   /* text AND chitin. Same colour on purpose. */
+  --ash:    #5E6659;   /* secondary text                           */
+
+  --ember:  #D9501B;   /* operator kit / hazard orange             */
+  --moss:   #2F6B3A;   /* the garden it gets handed back to        */
+  --leaf:   #4E9A55;
+  --tallow: #C98A28;   /* low sun through a window                 */
+
+  --display: 'Instrument Serif', 'Times New Roman', serif;
+  --body:    'Inter', system-ui, -apple-system, sans-serif;
+  --data:    'DM Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  --gutter: clamp(1.25rem, 5vw, 5.5rem);
+  --bar-h: 3.25rem;
+
+  /* pointer position, written by script.js. Used by the lens, the
+     cursor ring and the mask that reveals hidden life. Kept as CSS
+     vars so the pointer never triggers a JS style recalculation of
+     anything but two custom properties. */
+  --mx: 50vw;
+  --my: 50vh;
+  --lens-r: 210px;
+  --lens-a: 0;         /* lens opacity, faded out after act 1 */
+
+  /* Set by script.js to an inline SVG turbulence tile. Left as `none`
+     here so a missing value can never make .grain paint a broken
+     image, and so `lite` devices simply never get the layer. */
+  --grain-src: none;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { background: var(--paper); }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: clamp(0.98rem, 0.45vw + 0.86rem, 1.0625rem);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Nothing is visible until the boot class lands, but ONLY when JS is
+   running. `html.no-js` never gets .booting, so a JS-less visitor
+   sees the document immediately. */
+body { opacity: 1; transition: opacity .5s ease; }
+html.booting body { opacity: 0; }
+
+img, svg, canvas { display: block; max-width: 100%; }
+
+a { color: inherit; }
+
+:where(a, button):focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.skip {
+  position: fixed;
+  top: .5rem; left: .5rem;
+  z-index: 999;
+  padding: .6rem 1rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--data);
+  font-size: .75rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform .25s ease;
+}
+.skip:focus { transform: translateY(0); }
+
+.sr {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+
+/* ---------- 2. base document mode (no JS / reduced motion) ---------- */
+
+main { display: block; }
+
+.act {
+  position: relative;
+  padding: clamp(4rem, 12vh, 8rem) var(--gutter);
+  border-top: 1px solid var(--shade);
+}
+.act:first-child { border-top: 0; }
+
+.stage { position: relative; }
+
+/* Every visual layer. In base mode these simply stack in the flow so
+   the artwork is still seen; in cinema mode they become absolutely
+   positioned plates the camera moves through. */
+.plate {
+  position: relative;
+  margin: 0 0 2rem;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.plate > svg { width: 100%; height: auto; }
+
+.copy { position: relative; max-width: 46ch; }
+
+.eyebrow {
+  margin: 0 0 1.1rem;
+  font-family: var(--data);
+  font-size: .6875rem;
+  font-weight: 400;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--ember);
+}
+.eyebrow--moss { color: var(--moss); }
+.eyebrow--tallow { color: #9A6A18; }
+
+h1, h2 {
+  font-family: var(--display);
+  font-weight: 400;
+  line-height: .95;
+  letter-spacing: -.015em;
+  margin: 0;
+  color: var(--ink);
+  text-wrap: balance;
+}
+h1 { font-size: clamp(3rem, 11vw, 9.5rem); }
+h2 { font-size: clamp(2.35rem, 7vw, 5.75rem); }
+h3 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+  line-height: 1.1;
+  margin: 0 0 .5rem;
+}
+em { font-style: italic; color: var(--ember); }
+
+.lede { margin: 1.35rem 0 0; color: var(--ash); max-width: 44ch; }
+.lede strong { color: var(--ink); font-weight: 500; }
+
+
+/* ---------- 3. cinema mode ---------- */
+
+.has-motion .act {
+  height: 100vh;
+  height: 100svh;
+  padding: 0;
+  border-top: 0;
+  overflow: hidden;
+}
+
+.has-motion .stage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.has-motion .plate {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  backface-visibility: hidden;
+}
+/* Promotion is granted only while an act is on stage. Promoting all
+   sixteen plates up front costs tens of megabytes of GPU memory for
+   layers nobody is looking at, which is exactly how a scroll site
+   ends up janky on a mid-range phone. The class is toggled by the
+   shot's own ScrollTrigger. */
+.has-motion .act.is-live .plate { will-change: transform, opacity; }
+
+.has-motion .plate > svg {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+/* A plate that only exists after the camera arrives. Hidden with
+   visibility (not display) so its layout is already measured and the
+   iris has something real to open onto. */
+.has-motion .plate[data-enter] { visibility: hidden; opacity: 0; }
+
+.has-motion .copy {
+  position: relative;
+  z-index: 6;
+  padding: 0 var(--gutter);
+  width: 100%;
+  max-width: none;
+  pointer-events: none;
+}
+.has-motion .copy > * { pointer-events: auto; }
+.has-motion .copy--left   { justify-self: start;  max-width: min(46ch, 44vw); }
+.has-motion .copy--right  { justify-self: end;    max-width: min(42ch, 40vw); text-align: right; }
+.has-motion .copy--center { justify-self: center; max-width: min(52ch, 88vw); text-align: center; }
+.has-motion .copy--bottom { align-self: end; padding-bottom: clamp(3rem, 12vh, 7rem); }
+.has-motion .copy--top    { align-self: start; padding-top: clamp(5rem, 16vh, 9rem); }
+
+/* ---- the card ----
+   On a light page, type set straight over busy artwork is a coin
+   toss: a tunnel or a swarm passing behind a descender destroys the
+   word. Acts whose artwork fills the frame get their copy on a
+   plaster card instead, so contrast is guaranteed rather than hoped
+   for. It reads as a survey annotation pinned to the wall, which is
+   what it is. */
+/* Base / reduced motion: nothing is stacked behind the copy, so the
+   card needs no chrome at all — it is just a block of text. */
+.copy--card > .card { display: block; }
+.copy--card > .card > .lede { max-width: 52ch; }
+
+/* Cinema mode: now there IS artwork behind it, so it earns its
+   plaster. */
+.has-motion .copy--card > .card {
+  display: inline-block;
+  text-align: left;
+  max-width: min(56ch, 92vw);
+  padding: clamp(1.5rem, 3vw, 2.4rem) clamp(1.5rem, 3vw, 2.6rem) clamp(1.6rem, 3vw, 2.5rem);
+  background: rgba(242, 239, 229, .93);
+  border: 1px solid var(--shade);
+  border-left: 3px solid var(--ember);
+  border-radius: 3px;
+  box-shadow: 0 18px 50px -24px rgba(25, 30, 23, .45);
+  backdrop-filter: blur(7px) saturate(1.05);
+  -webkit-backdrop-filter: blur(7px) saturate(1.05);
+}
+
+/* Split text. Each letter is its own inline-block so it can be
+   animated on the GPU; the whole word stays a single readable text
+   node for a screen reader because the wrapper keeps the label. */
+.split { display: inline-block; white-space: pre-wrap; }
+.split .ch {
+  display: inline-block;
+  will-change: transform, opacity;
+  transform-origin: 50% 100%;
+}
+
+.layer { will-change: transform; }
+
+
+/* ---------- 4. chrome ---------- */
+
+/* --- brand bar: these demos are CreatixReach work, say so --- */
+.brandbar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  height: var(--bar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 clamp(1rem, 3vw, 2rem);
+  font-family: var(--data);
+  font-size: .6875rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ash);
+  background: linear-gradient(to bottom, rgba(242, 239, 229, .94), rgba(242, 239, 229, 0));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+.brandbar a, .brandbar span { pointer-events: auto; }
+.brandbar__mark {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.brandbar__dot {
+  width: .4rem; height: .4rem; border-radius: 50%;
+  background: var(--ember);
+}
+.brandbar__back { text-decoration: none; color: var(--ash); }
+.brandbar__back:hover { color: var(--ember); }
+@media (max-width: 640px) { .brandbar__mid { display: none; } }
+
+/* --- slate: the corner HUD. It reports real state, which is the
+   only reason it is allowed on screen. --- */
+.slate {
+  position: fixed;
+  right: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  z-index: 60;
+  width: min(15rem, 46vw);
+  padding: .75rem .9rem .85rem;
+  font-family: var(--data);
+  font-size: .6875rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ash);
+  background: rgba(242, 239, 229, .82);
+  border: 1px solid var(--shade);
+  border-radius: 3px;
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+}
+html.no-js .slate { display: none; }
+.slate__row { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
+.slate__i { color: var(--ember); }
+.slate__n { color: var(--ink); letter-spacing: .1em; }
+.slate__track { margin-top: .6rem; height: 2px; background: var(--shade); overflow: hidden; }
+.slate__bar {
+  height: 100%; background: var(--ink);
+  transform: scaleX(0); transform-origin: 0 50%;
+  will-change: transform;
+}
+/* Infestation read-out. Falls to zero across act 4 — a progress
+   indicator that happens to also be the plot. */
+.slate__gauge { margin-top: .55rem; display: flex; gap: 2px; }
+.slate__gauge i {
+  flex: 1; height: 6px; background: var(--shade);
+  transition: background .3s ease;
+}
+.slate__gauge i.on { background: var(--ember); }
+
+/* --- film grain + vignette. One fixed element, no repaint. --- */
+.grain {
+  position: fixed; inset: -18%;
+  z-index: 40;
+  pointer-events: none;
+  opacity: .22;
+  /* multiply, not overlay: on a light page overlay washes out and
+     does nothing. Multiply puts the tooth back into the plaster. */
+  mix-blend-mode: multiply;
+  background-image: var(--grain-src);
+  background-size: 180px 180px;
+  animation: grainshift 1.1s steps(4) infinite;
+}
+@keyframes grainshift {
+  0%   { transform: translate3d(0, 0, 0); }
+  25%  { transform: translate3d(-3%, 2%, 0); }
+  50%  { transform: translate3d(2%, -3%, 0); }
+  75%  { transform: translate3d(-2%, -2%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+.vignette {
+  position: fixed; inset: 0; z-index: 41; pointer-events: none;
+  background: radial-gradient(125% 95% at 50% 42%, transparent 48%, rgba(120, 112, 92, .3) 100%);
+  mix-blend-mode: multiply;
+}
+
+/* --- the lens. On a dark page this would be a torch beam. On a pale
+   wall the opposite is true: what an inspector does is put a lens
+   down and let the SHADOW under it show up what the flat light was
+   hiding. So it is a soft darkening circle, not a glow. Two custom
+   properties change per frame, so this costs one composite and never
+   a layout. --- */
+.lens {
+  position: fixed; inset: 0; z-index: 38;
+  pointer-events: none;
+  opacity: var(--lens-a);
+  transition: opacity .6s ease;
+  background:
+    radial-gradient(circle var(--lens-r) at var(--mx) var(--my),
+      rgba(38, 44, 34, .16) 0%,
+      rgba(38, 44, 34, .10) 40%,
+      rgba(38, 44, 34, .035) 64%,
+      transparent 76%);
+  mix-blend-mode: multiply;
+}
+
+/* Anything inside this wrapper is only visible where the lens is
+   pointing. This is the "the wall was never empty" effect and it is
+   a mask, not a per-frame redraw. */
+.hidden-life {
+  -webkit-mask-image: radial-gradient(circle calc(var(--lens-r) * .84) at var(--mx) var(--my),
+    #000 0%, rgba(0, 0, 0, .78) 46%, transparent 76%);
+  mask-image: radial-gradient(circle calc(var(--lens-r) * .84) at var(--mx) var(--my),
+    #000 0%, rgba(0, 0, 0, .78) 46%, transparent 76%);
+}
+/* No pointer, no lens — a phone gets a slow automatic sweep instead,
+   driven from script.js by the same two variables. */
+
+/* --- custom cursor --- */
+.cursor {
+  position: fixed; top: 0; left: 0; z-index: 70;
+  width: 26px; height: 26px; margin: -13px 0 0 -13px;
+  border: 1px solid rgba(25, 30, 23, .45);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(-100px, -100px, 0);
+  transition: width .22s ease, height .22s ease, margin .22s ease,
+              border-color .22s ease, background .22s ease, opacity .3s ease;
+  will-change: transform;
+}
+.cursor.live { opacity: 1; }
+.cursor.near {
+  width: 54px; height: 54px; margin: -27px 0 0 -27px;
+  border-color: var(--ember);
+  background: rgba(217, 80, 27, .07);
+}
+.cursor__label {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--data); font-size: .5rem;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ember); white-space: nowrap;
+  opacity: 0; transition: opacity .2s ease;
+}
+.cursor.near .cursor__label { opacity: 1; }
+@media (hover: none), (pointer: coarse) { .cursor { display: none; } }
+
+/* --- canvases --- */
+/* ambient: dust, spores, the occasional thing crossing the viewport */
+.ambient {
+  position: fixed; inset: 0; z-index: 3;
+  pointer-events: none;
+}
+/* swarm: the heavy insect work, one per act that needs it, sized to
+   its plate. Canvas rather than DOM nodes because six hundred moving
+   things as elements is six hundred style recalculations a frame. The
+   artwork is still vector — every insect is drawn with paths. */
+.swarm {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  z-index: 4;
+}
+
+
+/* ---------- 5. per-act artwork ----------
+   THE GRADE. Acts 1-3 sit on dirtier, greyer plaster and act 6 opens
+   out to the brightest white on the page. The background is doing the
+   before-and-after on its own. */
+
+/* ============ ACT 1 — THE WALL ============ */
+#act-wall { background: #E7E3D5; }
+.room-line { fill: none; stroke: rgba(25, 30, 23, .10); stroke-width: 1.2; }
+.room-fill { fill: rgba(25, 30, 23, .018); }
+.bulb-glow { fill: url(#bulbGrad); }
+
+/* what is on the wall, before you look properly */
+.eye { fill: #232A1E; opacity: 0; }
+.eye-glow { fill: rgba(35, 42, 30, .42); opacity: 0; filter: blur(3px); }
+
+.wall-title { position: relative; }
+.wall-title h1 { line-height: .88; }
+.hint {
+  margin: 2.2rem 0 0;
+  font-family: var(--data); font-size: .6875rem;
+  letter-spacing: .2em; text-transform: uppercase; color: var(--ash);
+  display: inline-flex; align-items: center; gap: .6rem;
+}
+.hint::before {
+  content: ''; width: 1.6rem; height: 1px; background: var(--ember);
+  animation: hintpulse 2.4s ease-in-out infinite;
+}
+@keyframes hintpulse { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+@media (hover: none), (pointer: coarse) { .hint--desktop { display: none; } }
+@media (hover: hover) and (pointer: fine) { .hint--touch { display: none; } }
+
+/* ============ ACT 2 — THE HOUSE ============ */
+#act-house { background: #EEEADD; }
+.house-wall    { fill: #E2DDCC; }
+.house-room    { fill: #F7F4EA; }   /* lit. the part you live in.    */
+/* The void behind the plaster. Dim enough to read as "unlit and
+   hidden", but NOT dark — the insects inside it are drawn in ink, and
+   ink on a black cavity is nothing. Mid-tone is the compromise that
+   keeps both readings: it looks like a shadow AND you can count the
+   legs. */
+.house-cavity  { fill: #8F8A73; }
+.house-stud    { fill: #B29A72; }
+.house-floor   { fill: #C0B08E; }
+.house-out     { fill: none; stroke: rgba(25, 30, 23, .55); stroke-width: 1.5; }
+.house-hair    { fill: none; stroke: rgba(25, 30, 23, .18); stroke-width: 1; }
+.house-win     { fill: url(#winGrad); }
+.house-lamp    { fill: url(#lampGrad); }
+.house-roof    { fill: #CFC7B0; }
+.house-ground  { fill: #C6BDA0; }
+.house-label   {
+  font-family: var(--data); font-size: 11px;
+  letter-spacing: .18em; text-transform: uppercase;
+  fill: var(--ash);
+}
+.house-tick { stroke: var(--ember); stroke-width: 1; opacity: .55; }
+
+/* the measured entry marker for the push-in. r=1, never painted. */
+.entry { fill: none; stroke: none; }
+
+/* ============ ACT 3 — BELOW ============ */
+#act-below { background: #E3DECD; }
+.soil-a { fill: #D9D2BC; }
+.soil-b { fill: #CDC4A9; }
+.soil-c { fill: #BFB495; }
+.tunnel {
+  fill: none;
+  stroke: #5C5343;                  /* an ant gallery is a void, and a
+                                       void in pale soil reads dark */
+  stroke-width: 15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tunnel-lip {
+  fill: none;
+  stroke: rgba(25, 30, 23, .3);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+}
+.root { fill: none; stroke: #8A6A3E; stroke-width: 5; stroke-linecap: round; }
+.root-fine { fill: none; stroke: #9A7A48; stroke-width: 2; stroke-linecap: round; }
+.pipe { fill: none; stroke: #9FA79A; stroke-width: 22; stroke-linecap: butt; }
+.pipe-in { fill: none; stroke: #6F776C; stroke-width: 14; }
+.egg { fill: #FBF7E8; stroke: rgba(25, 30, 23, .25); stroke-width: .7; }
+.egg-glow { fill: #FFFDF2; opacity: .55; filter: blur(6px); }
+.larva { fill: #E8DCB4; stroke: rgba(25, 30, 23, .3); stroke-width: .8; }
+.termite { fill: #7A6A4A; }
+
+.shakeable { display: inline-block; will-change: transform; }
+
+/* spiders drop on real threads: a line scaled from its top */
+.thread {
+  stroke: rgba(25, 30, 23, .38);
+  stroke-width: 1;
+}
+
+/* ============ specimen belt (horizontal) ============ */
+.belt {
+  position: relative;
+  padding: clamp(3.5rem, 10vh, 6.5rem) 0;
+  background: var(--chalk);
+  border-top: 1px solid var(--shade);
+  border-bottom: 1px solid var(--shade);
+  overflow: hidden;
+}
+.belt__head { padding: 0 var(--gutter); margin: 0 0 clamp(2rem, 5vh, 3rem); }
+.belt__track {
+  display: flex;
+  gap: clamp(1rem, 2vw, 1.75rem);
+  padding: 0 var(--gutter);
+  will-change: transform;
+}
+.has-motion .belt__track { padding-right: 40vw; }
+.spec {
+  flex: 0 0 clamp(15rem, 21vw, 19rem);
+  padding: 1.5rem 1.4rem 1.6rem;
+  background: #FAF8F0;
+  border: 1px solid var(--shade);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .35s ease, transform .35s cubic-bezier(.2, .8, .2, 1),
+              box-shadow .35s ease;
+}
+.spec:hover {
+  border-color: var(--ember);
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px -22px rgba(25, 30, 23, .5);
+}
+.spec__n {
+  font-family: var(--data); font-size: .625rem; letter-spacing: .2em;
+  color: var(--ember); display: block; margin-bottom: 1rem;
+}
+.spec__art { height: 5.5rem; margin: 0 0 1.1rem; display: grid; place-items: center; }
+.spec__art svg { height: 100%; width: auto; overflow: visible; }
+.spec__lat {
+  font-family: var(--display); font-style: italic;
+  font-size: .95rem; color: var(--ash); margin: .15rem 0 .8rem;
+}
+.spec p { margin: 0; font-size: .875rem; color: var(--ash); line-height: 1.55; }
+.spec__bar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  background: var(--ember);
+  transform: scaleX(var(--risk, .5)); transform-origin: 0 50%;
+}
+/* The specimens are the same ink as the body text. That is the point
+   of the whole light treatment: nothing is hiding. */
+.bug-body   { fill: #2B3226; stroke: rgba(25, 30, 23, .8); stroke-width: 1.1; }
+.bug-shell  { fill: #3A422F; stroke: rgba(25, 30, 23, .7); stroke-width: 1; }
+.bug-leg    { fill: none; stroke: rgba(25, 30, 23, .8); stroke-width: 1.1; stroke-linecap: round; }
+.bug-eye    { fill: var(--ember); }
+
+/* ============ ACT 4 — CONTACT ============ */
+#act-contact { background: #EFEBDE; }
+.op-suit   { fill: #EDE8DA; stroke: rgba(25, 30, 23, .6); stroke-width: 1.4; }
+.op-dark   { fill: #2B3226; }
+.op-hi     { fill: var(--ember); }
+.op-hi-soft{ fill: rgba(217, 80, 27, .28); }
+.op-glass  { fill: url(#visorGrad); }
+.op-metal  { fill: #C3BCA8; stroke: rgba(25, 30, 23, .55); stroke-width: 1.2; }
+.op-hose   { fill: none; stroke: #4A4B3E; stroke-width: 9; stroke-linecap: round; }
+.op-hose-hi{ fill: none; stroke: var(--ember); stroke-width: 1.5; stroke-linecap: round; }
+.mist-blob { fill: rgba(96, 122, 104, .17); }
+
+.cannon { will-change: transform; }
+.spray-cone {
+  fill: url(#sprayGrad);
+  filter: url(#gooey);
+  will-change: transform, opacity;
+}
+
+/* ============ ACT 5 — BALANCE ============ */
+#act-balance { background: #F1EEE2; }
+.bird { fill: #3A422F; stroke: rgba(25, 30, 23, .5); stroke-width: 1; }
+.bird-wing { will-change: transform; }
+.lizard { fill: var(--moss); stroke: rgba(25, 30, 23, .45); stroke-width: 1.1; }
+.ladybug { fill: var(--ember); }
+.ladybug-spot { fill: #191E17; }
+.leaf { fill: var(--leaf); }
+
+/* ============ ACT 6 — HALCYON ============ */
+#act-clean { background: #FBFAF4; }   /* the brightest thing on the page */
+.clean-sky   { fill: url(#skyGrad); }
+/* A white house on a near-white sky needs an edge or it is a blank
+   rectangle. Stroke, not a darker fill — the building should stay the
+   brightest thing in the frame. */
+.clean-house { fill: #FFFFFF; stroke: rgba(25, 30, 23, .38); stroke-width: 2; }
+.clean-house-2 { fill: #EFEBE0; }
+.clean-roof  { fill: #3B4A3E; }
+.clean-glass { fill: url(#cleanGlass); }
+.clean-ground{ fill: var(--moss); }
+.clean-grass { stroke: var(--leaf); stroke-width: 2.4; stroke-linecap: round; fill: none; }
+.bloom { /* transform-origin is set by GSAP, not here */ }
+/* White petals on the brightest background on the page would be
+   invisible, so they get an outline rather than a fill change — a
+   flower reads by its edge, not its middle. */
+.petal ellipse { fill: #FFFFFF; stroke: rgba(25, 30, 23, .32); stroke-width: 1; }
+.petal--pink ellipse { fill: #E9A2BE; stroke: rgba(25, 30, 23, .28); }
+.ray {
+  fill: url(#rayGrad);
+  mix-blend-mode: multiply;
+}
+
+.cta {
+  position: relative;
+  display: inline-flex; align-items: center; gap: .75rem;
+  margin-top: 2rem;
+  padding: 1rem 2.1rem;
+  font-family: var(--data); font-size: .75rem;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--paper); background: var(--ink);
+  border: 0; border-radius: 2px;
+  text-decoration: none; cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition: background .3s ease;
+}
+.cta__ripple {
+  position: absolute; z-index: -1;
+  width: 12px; height: 12px; margin: -6px 0 0 -6px;
+  border-radius: 50%; background: rgba(242, 239, 229, .3);
+  transform: scale(0); pointer-events: none;
+}
+.cta:hover { background: var(--ember); }
+.cta__arrow { transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
+.cta:hover .cta__arrow { transform: translateX(4px); }
+
+/* the last cockroach */
+.lastbug {
+  position: fixed;
+  z-index: 65;
+  width: 30px; height: 30px;
+  opacity: 0;
+  pointer-events: auto;
+  cursor: none;
+  will-change: transform;
+}
+html.no-js .lastbug, .no-motion .lastbug { display: none; }
+.lastbug svg { width: 100%; height: 100%; overflow: visible; }
+
+/* The one place darkness is earned: the lights actually go out. */
+.blackout {
+  position: fixed; inset: 0; z-index: 80;
+  background: #12160F;
+  display: grid; place-items: center;
+  opacity: 0; pointer-events: none;
+}
+.blackout p {
+  font-family: var(--display); font-style: italic;
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  color: #D8D3C2; margin: 0; opacity: 0;
+}
+
+/* ---------- outro ---------- */
+.outro {
+  position: relative; z-index: 5;
+  padding: clamp(4rem, 12vh, 8rem) var(--gutter) clamp(6rem, 14vh, 9rem);
+  background: var(--chalk);
+  border-top: 1px solid var(--shade);
+}
+.outro__grid {
+  display: grid; gap: clamp(2rem, 5vw, 4rem);
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  max-width: 78rem;
+}
+.outro h2 { font-size: clamp(1.9rem, 4vw, 3.25rem); margin-bottom: 1.2rem; }
+.spec-list { list-style: none; margin: 0; padding: 0; font-family: var(--data); font-size: .8125rem; }
+.spec-list li {
+  display: flex; justify-content: space-between; gap: 1.5rem;
+  padding: .7rem 0; border-bottom: 1px solid var(--shade);
+  color: var(--ash);
+}
+.spec-list b { font-weight: 400; color: var(--ink); text-align: right; }
+.disclosure {
+  margin: clamp(2.5rem, 6vh, 4rem) 0 0;
+  max-width: 60ch; font-size: .875rem; color: var(--ash);
+}
+.disclosure a { color: var(--ember); }
+
+
+/* ---------- 6. responsive ---------- */
+
+@media (max-width: 900px) {
+  .has-motion .copy--left,
+  .has-motion .copy--right,
+  .has-motion .copy--center {
+    justify-self: center; max-width: 92vw; text-align: left;
+  }
+  .has-motion .copy--right { text-align: left; }
+  .slate { width: min(12rem, 44vw); font-size: .625rem; }
+  .slate__gauge { display: none; }
+  .spec { flex-basis: clamp(13rem, 66vw, 16rem); }
+  /* Masking a full-screen layer is the single most expensive thing on
+     this page. Phones get the ambient sweep, not the mask. */
+  .hidden-life { -webkit-mask-image: none; mask-image: none; opacity: .78; }
+}
+
+@media (max-width: 560px) {
+  :root { --lens-r: 150px; }
+  .brandbar { font-size: .625rem; letter-spacing: .12em; }
+  .has-motion .copy--card > .card { padding: 1.2rem 1.15rem 1.3rem; }
+}
+
+/* Some effects are simply not worth their cost on a phone. Set by
+   script.js after a coarse-pointer / low-core check. */
+.is-lite .grain { display: none; }
+.is-lite .spray-cone { filter: none; }
+.is-lite .egg-glow { filter: none; opacity: .8; }
+.is-lite .eye-glow { display: none; }
+
+
+/* ---------- reduced motion ----------
+   Requirement: this must produce a READABLE page, not an empty one.
+   Everything real lives in .copy, which is untouched here. Plates are
+   unpinned and shown at a sensible height; loops stop. */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .grain { display: none; }
+  .lens { display: none; }
+  .cursor { display: none; }
+  .hidden-life { -webkit-mask-image: none; mask-image: none; }
+}
+
+.no-motion .act { height: auto; padding: clamp(3.5rem, 10vh, 7rem) var(--gutter); overflow: visible; }
+.no-motion .stage { position: relative; display: block; }
+.no-motion .plate {
+  position: relative; inset: auto;
+  height: clamp(16rem, 46vh, 30rem);
+  margin-bottom: 2.5rem;
+  visibility: visible !important; opacity: 1 !important;
+  transform: none !important; clip-path: none !important;
+}
+.no-motion .plate > svg { height: 100%; }
+.no-motion .plate[data-enter] { display: none; }  /* second plate of a push-in is the same scene twice */
+.no-motion .copy {
+  position: relative; max-width: 46ch;
+  justify-self: start !important; text-align: left !important;
+  padding: 0; opacity: 1 !important; transform: none !important;
+}
+.no-motion .split .ch { opacity: 1 !important; transform: none !important; }
+.no-motion .swarm, .no-motion .ambient { display: none; }
+.no-motion .belt__track { flex-wrap: wrap; transform: none !important; padding-right: var(--gutter); }
+.no-motion .spec { flex-basis: 17rem; }
+.no-motion .lens, .no-motion .grain, .no-motion .vignette { display: none; }
+/* The slate reports which act you are in. With nothing pinned there
+   is no "current act", so a static readout would be a lie. */
+.no-motion .slate { display: none; }
+
+/* no-JS is reduced motion plus "assume nothing was measured" */
+html.no-js .swarm, html.no-js .ambient, html.no-js .lens,
+html.no-js .grain, html.no-js .vignette, html.no-js .cursor { display: none; }
+html.no-js .act { height: auto; padding: clamp(3.5rem, 10vh, 7rem) var(--gutter); }
+html.no-js .plate[data-enter] { display: none; }

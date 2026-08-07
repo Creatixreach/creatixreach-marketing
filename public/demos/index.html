@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Motion demos â€” CreatixReach</title>
+<title>Motion demos - CreatixReach</title>
 <meta name="description" content="Scroll-driven demo builds. Each one is a single static page: no video, no 3D engine, no build step.">
 <meta name="theme-color" content="#0C1017">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +12,7 @@
 <style>
 :root{
   --asphalt:#0C1017; --dusk:#161F2B; --paper:#E9EEF4; --fog:#7E8EA2;
-  --sodium:#FFA92E; --instrument:#4FE0D2; --brick:#E8724C;
+  --sodium:#FFA92E; --instrument:#4FE0D2; --brick:#E8724C; --halcyon:#F0662B;
   --display:'Big Shoulders Display','Arial Narrow',sans-serif;
   --body:'IBM Plex Sans',system-ui,sans-serif;
   --data:'IBM Plex Mono',ui-monospace,monospace;
@@ -38,7 +38,7 @@ h1{
 }
 .lede{margin:1.5rem 0 0;max-width:52ch;color:var(--fog);font-size:clamp(1rem,1.3vw,1.15rem)}
 
-/* Call sheet. The numbering is real â€” these ship in order. */
+/* Call sheet. The numbering is real - these ship in order. */
 .sheet{border-top:1px solid rgba(233,238,244,.14)}
 .row{
   display:grid;
@@ -61,7 +61,8 @@ h1{
 .row__accent{position:absolute;left:0;top:0;bottom:0;width:2px;background:currentColor;transform:scaleY(0);transform-origin:50% 0;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
 .row:hover .row__accent{transform:scaleY(1)}
 .row--freight{color:var(--sodium)} .row--estate{color:var(--brick)} .row--music{color:var(--instrument)}
-.row--freight .row__t,.row--estate .row__t,.row--music .row__t{color:var(--paper)}
+.row--pest{color:var(--halcyon)}
+.row--freight .row__t,.row--estate .row__t,.row--music .row__t,.row--pest .row__t{color:var(--paper)}
 
 footer{
   padding:clamp(2.5rem,7vh,4rem) var(--gutter);
@@ -83,10 +84,10 @@ footer a:hover{text-decoration:underline}
 <body>
 
 <header>
-  <p class="eyebrow">CreatixReach Â· Motion studies</p>
-  <h1>Three pages that move like film.</h1>
+  <p class="eyebrow">CreatixReach / Motion studies</p>
+  <h1>Pages that move like film.</h1>
   <p class="lede">Each build is one static HTML page driven entirely by scroll position.
-    No video file, no 3D engine, no build step. Open one and scroll â€” forwards or
+    No video file, no 3D engine, no build step. Open one and scroll - forwards or
     backwards, the camera follows you either way.</p>
 </header>
 
@@ -98,16 +99,26 @@ footer a:hover{text-decoration:underline}
     <span class="row__t">Meridian Freight
       <span>An overnight haul told in four shots. The camera tracks the truck, closes on the cab window, and goes through it.</span>
     </span>
-    <span class="row__m">Logistics Â· Courier</span>
+    <span class="row__m">Logistics / Courier</span>
+    <span class="row__s">Live</span>
+  </a>
+
+  <a class="row row--live row--pest" href="pest-control/index.html">
+    <span class="row__accent"></span>
+    <span class="row__n">02</span>
+    <span class="row__t">Halcyon
+      <span>Six acts inside the walls of an infested house. Scroll it backwards and the colony un-digs itself.</span>
+    </span>
+    <span class="row__m">Pest control / US &amp; UK</span>
     <span class="row__s">Live</span>
   </a>
 
 </main>
 
 <footer>
-  <p>Meridian Freight, Ridgeline and Nocturne are fictional brands, built to
-    demonstrate scroll-driven art direction. Nothing here is a real client.</p>
-  <span><a href="https://creatixreach.io/contact">Start a project â†’</a></span>
+  <p>Meridian Freight and Halcyon are fictional brands, built to demonstrate
+    scroll-driven art direction. Nothing here is a real client.</p>
+  <span><a href="https://creatixreach.io/contact">Start a project -&gt;</a></span>
 </footer>
 
 </body>
