@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motion demos — CreatixReach</title>
+<meta name="description" content="Scroll-driven demo builds. Each one is a single static page: no video, no 3D engine, no build step.">
+<meta name="theme-color" content="#0C1017">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --asphalt:#0C1017; --dusk:#161F2B; --paper:#E9EEF4; --fog:#7E8EA2;
+  --sodium:#FFA92E; --instrument:#4FE0D2; --brick:#E8724C;
+  --display:'Big Shoulders Display','Arial Narrow',sans-serif;
+  --body:'IBM Plex Sans',system-ui,sans-serif;
+  --data:'IBM Plex Mono',ui-monospace,monospace;
+  --gutter:clamp(1.25rem,5vw,5rem);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0;background:var(--asphalt);color:var(--paper);
+  font-family:var(--body);line-height:1.55;
+  display:grid;grid-template-rows:auto 1fr auto;min-height:100vh;
+}
+a{color:inherit}
+
+header{padding:clamp(3rem,10vh,6rem) var(--gutter) clamp(2rem,6vh,3.5rem)}
+.eyebrow{
+  font-family:var(--data);font-size:.6875rem;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--sodium);margin:0 0 1.5rem;
+}
+h1{
+  font-family:var(--display);font-weight:800;line-height:.86;
+  font-size:clamp(2.75rem,9vw,7rem);letter-spacing:-.01em;margin:0;
+  max-width:16ch;
+}
+.lede{margin:1.5rem 0 0;max-width:52ch;color:var(--fog);font-size:clamp(1rem,1.3vw,1.15rem)}
+
+/* Call sheet. The numbering is real — these ship in order. */
+.sheet{border-top:1px solid rgba(233,238,244,.14)}
+.row{
+  display:grid;
+  grid-template-columns:4.5rem minmax(0,1fr) 12rem 7rem;
+  align-items:baseline;gap:1.5rem;
+  padding:clamp(1.5rem,4vh,2.25rem) var(--gutter);
+  border-bottom:1px solid rgba(233,238,244,.14);
+  text-decoration:none;position:relative;
+  transition:background .3s ease;
+}
+.row:hover,.row:focus-visible{background:rgba(233,238,244,.04)}
+.row[aria-disabled="true"]{pointer-events:none;opacity:.42}
+.row__n{font-family:var(--data);font-size:.75rem;letter-spacing:.14em;color:var(--fog)}
+.row__t{font-family:var(--display);font-weight:600;font-size:clamp(1.75rem,4vw,3rem);line-height:.95;letter-spacing:-.01em}
+.row__t span{display:block;font-family:var(--body);font-weight:400;font-size:.9375rem;letter-spacing:0;color:var(--fog);margin-top:.6rem;max-width:40ch;line-height:1.5}
+.row__m{font-family:var(--data);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--fog)}
+.row__s{font-family:var(--data);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;text-align:right}
+.row--live .row__s{color:var(--instrument)}
+.row--queued .row__s{color:var(--fog)}
+.row__accent{position:absolute;left:0;top:0;bottom:0;width:2px;background:currentColor;transform:scaleY(0);transform-origin:50% 0;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.row:hover .row__accent{transform:scaleY(1)}
+.row--freight{color:var(--sodium)} .row--estate{color:var(--brick)} .row--music{color:var(--instrument)}
+.row--freight .row__t,.row--estate .row__t,.row--music .row__t{color:var(--paper)}
+
+footer{
+  padding:clamp(2.5rem,7vh,4rem) var(--gutter);
+  display:flex;flex-wrap:wrap;gap:1.5rem 3rem;justify-content:space-between;align-items:end;
+  font-family:var(--data);font-size:.75rem;letter-spacing:.1em;color:var(--fog);
+}
+footer p{margin:0;max-width:46ch;font-family:var(--body);letter-spacing:0;line-height:1.6}
+footer a{color:var(--sodium);text-decoration:none}
+footer a:hover{text-decoration:underline}
+:where(a):focus-visible{outline:2px solid var(--sodium);outline-offset:-2px}
+
+@media (max-width:820px){
+  .row{grid-template-columns:2.5rem 1fr;gap:.75rem 1rem}
+  .row__m{grid-column:2}
+  .row__s{grid-column:2;text-align:left}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">CreatixReach · Motion studies</p>
+  <h1>Three pages that move like film.</h1>
+  <p class="lede">Each build is one static HTML page driven entirely by scroll position.
+    No video file, no 3D engine, no build step. Open one and scroll — forwards or
+    backwards, the camera follows you either way.</p>
+</header>
+
+<main class="sheet">
+
+  <a class="row row--live row--freight" href="courier/index.html">
+    <span class="row__accent"></span>
+    <span class="row__n">01</span>
+    <span class="row__t">Meridian Freight
+      <span>An overnight haul told in four shots. The camera tracks the truck, closes on the cab window, and goes through it.</span>
+    </span>
+    <span class="row__m">Logistics · Courier</span>
+    <span class="row__s">Live</span>
+  </a>
+
+  <a class="row row--queued row--estate" href="real-estate/index.html" aria-disabled="true" tabindex="-1">
+    <span class="row__accent"></span>
+    <span class="row__n">02</span>
+    <span class="row__t">Ridgeline
+      <span>A house revealed one room at a time. The camera walks the plan instead of scrolling a gallery.</span>
+    </span>
+    <span class="row__m">Real estate</span>
+    <span class="row__s">Queued</span>
+  </a>
+
+  <a class="row row--queued row--music" href="music/index.html" aria-disabled="true" tabindex="-1">
+    <span class="row__accent"></span>
+    <span class="row__n">03</span>
+    <span class="row__t">Nocturne
+      <span>A record played from the inside. Scroll drives the needle across the groove and the room changes with the track.</span>
+    </span>
+    <span class="row__m">Music · Label</span>
+    <span class="row__s">Queued</span>
+  </a>
+
+</main>
+
+<footer>
+  <p>Meridian Freight, Ridgeline and Nocturne are fictional brands, built to
+    demonstrate scroll-driven art direction. Nothing here is a real client.</p>
+  <span><a href="https://creatixreach.io/contact">Start a project →</a></span>
+</footer>
+
+</body>
+</html>

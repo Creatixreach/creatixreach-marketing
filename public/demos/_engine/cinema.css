@@ -1,0 +1,113 @@
+/* ============================================================
+   CINEMA — structural CSS shared by every demo.
+   Owns layout mechanics only. Palette, type and scene art
+   live in each demo's own scene.css.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  opacity: 0;
+  transition: opacity .5s ease;
+}
+body.is-ready { opacity: 1; }
+
+img, svg { display: block; max-width: 100%; }
+
+/* ---------- shots ---------- */
+
+.shot {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* Every visual band inside a shot stacks in the same box. */
+.layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* Layers that get pushed past the camera need their own
+   compositing context or the iris reveal tears in Safari. */
+.layer--plate { transform: translateZ(0); backface-visibility: hidden; }
+
+/* Layers wider than the frame, so parallax never exposes an edge. */
+.layer--wide { left: -20vw; right: -20vw; width: auto; }
+
+.copy {
+  position: absolute;
+  z-index: 20;
+  pointer-events: auto;
+}
+
+/* ---------- slate / HUD ---------- */
+
+.slate {
+  position: fixed;
+  z-index: 90;
+  left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  padding: .85rem 1.25rem;
+  pointer-events: none;
+}
+
+.slate__track {
+  position: relative;
+  flex: 1;
+  height: 2px;
+  overflow: hidden;
+}
+.slate__bar {
+  position: absolute;
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+/* ---------- accessibility floor ---------- */
+
+:where(a, button):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 200;
+  padding: .7rem 1rem;
+}
+.skip:focus { left: .75rem; top: .75rem; }
+
+/* ---------- reduced motion ----------
+   No pinning, no scrub. Shots become ordinary stacked panels
+   with everything already in its final state. */
+
+.no-motion .shot { height: auto; min-height: 0; overflow: visible; }
+.no-motion .layer { display: none; }
+.no-motion .copy {
+  position: relative;
+  inset: auto;
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  max-width: none;
+  padding: 4rem 0;
+}
+.no-motion .slate { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
