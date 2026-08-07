@@ -182,8 +182,13 @@ h1, h2 {
   color: var(--ink);
   text-wrap: balance;
 }
-h1 { font-size: clamp(3rem, 11vw, 9.5rem); }
-h2 { font-size: clamp(2.35rem, 7vw, 5.75rem); }
+/* Sized against the SHORT axis as well as the long one. A 9.5rem
+   headline is a nice number on a 1440x900 monitor and pushes the
+   whole lede off the bottom of a 1568x677 laptop — and a pinned act
+   cannot scroll to rescue it, because scrolling is the animation.
+   Type in a pinned shot has to fit the viewport it is pinned to. */
+h1 { font-size: clamp(2.5rem, min(7.4vw, 13vh), 6.5rem); }
+h2 { font-size: clamp(2rem, min(5.4vw, 10vh), 4.75rem); }
 h3 {
   font-family: var(--display);
   font-weight: 400;
@@ -195,6 +200,15 @@ em { font-style: italic; color: var(--ember); }
 
 .lede { margin: 1.35rem 0 0; color: var(--ash); max-width: 44ch; }
 .lede strong { color: var(--ink); font-weight: 500; }
+
+/* Last-resort guard for very short windows: a pinned act cannot
+   scroll, so if the copy is still taller than the frame it has to
+   give something up. Line-height and margins go before type size. */
+@media (max-height: 700px) {
+  .has-motion .lede { margin-top: .9rem; font-size: .9375rem; }
+  .has-motion .eyebrow { margin-bottom: .7rem; }
+  .has-motion .hint { margin-top: 1.2rem; }
+}
 
 
 /* ---------- 3. cinema mode ---------- */
@@ -252,6 +266,8 @@ em { font-style: italic; color: var(--ember); }
 .has-motion .copy--left   { justify-self: start;  max-width: min(46ch, 44vw); }
 .has-motion .copy--right  { justify-self: end;    max-width: min(42ch, 40vw); text-align: right; }
 .has-motion .copy--center { justify-self: center; max-width: min(52ch, 88vw); text-align: center; }
+/* The extra bottom padding keeps copy clear of the slate HUD, which
+   is fixed to the bottom-right corner and is not part of this grid. */
 .has-motion .copy--bottom { align-self: end; padding-bottom: clamp(3rem, 12vh, 7rem); }
 .has-motion .copy--top    { align-self: start; padding-top: clamp(5rem, 16vh, 9rem); }
 
@@ -286,7 +302,18 @@ em { font-style: italic; color: var(--ember); }
 /* Split text. Each letter is its own inline-block so it can be
    animated on the GPU; the whole word stays a single readable text
    node for a screen reader because the wrapper keeps the label. */
-.split { display: inline-block; white-space: pre-wrap; }
+.split { display: inline; }
+/* The word is the unit that may not break. It also masks the letters,
+   so they rise from behind a line rather than floating in from
+   nowhere. The padding/negative-margin pair buys back the room that
+   overflow:hidden would otherwise steal from descenders. */
+.split .word {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  padding-bottom: .14em;
+  margin-bottom: -.14em;
+}
 .split .ch {
   display: inline-block;
   will-change: transform, opacity;
@@ -396,7 +423,7 @@ html.no-js .slate { display: none; }
 }
 .vignette {
   position: fixed; inset: 0; z-index: 41; pointer-events: none;
-  background: radial-gradient(125% 95% at 50% 42%, transparent 48%, rgba(120, 112, 92, .3) 100%);
+  background: radial-gradient(125% 95% at 50% 42%, transparent 55%, rgba(120, 112, 92, .2) 100%);
   mix-blend-mode: multiply;
 }
 
@@ -486,8 +513,8 @@ html.no-js .slate { display: none; }
 
 /* ============ ACT 1 — THE WALL ============ */
 #act-wall { background: #E7E3D5; }
-.room-line { fill: none; stroke: rgba(25, 30, 23, .10); stroke-width: 1.2; }
-.room-fill { fill: rgba(25, 30, 23, .018); }
+.room-line { fill: none; stroke: rgba(25, 30, 23, .17); stroke-width: 1.2; }
+.room-fill { fill: rgba(25, 30, 23, .03); }
 .bulb-glow { fill: url(#bulbGrad); }
 
 /* what is on the wall, before you look properly */
@@ -512,8 +539,8 @@ html.no-js .slate { display: none; }
 
 /* ============ ACT 2 — THE HOUSE ============ */
 #act-house { background: #EEEADD; }
-.house-wall    { fill: #E2DDCC; }
-.house-room    { fill: #F7F4EA; }   /* lit. the part you live in.    */
+.house-wall    { fill: #D5CEB8; }
+.house-room    { fill: #FAF8F1; }   /* lit. the part you live in.    */
 /* The void behind the plaster. Dim enough to read as "unlit and
    hidden", but NOT dark — the insects inside it are drawn in ink, and
    ink on a black cavity is nothing. Mid-tone is the compromise that
@@ -522,12 +549,12 @@ html.no-js .slate { display: none; }
 .house-cavity  { fill: #8F8A73; }
 .house-stud    { fill: #B29A72; }
 .house-floor   { fill: #C0B08E; }
-.house-out     { fill: none; stroke: rgba(25, 30, 23, .55); stroke-width: 1.5; }
-.house-hair    { fill: none; stroke: rgba(25, 30, 23, .18); stroke-width: 1; }
+.house-out     { fill: none; stroke: rgba(25, 30, 23, .72); stroke-width: 1.5; }
+.house-hair    { fill: none; stroke: rgba(25, 30, 23, .26); stroke-width: 1; }
 .house-win     { fill: url(#winGrad); }
 .house-lamp    { fill: url(#lampGrad); }
-.house-roof    { fill: #CFC7B0; }
-.house-ground  { fill: #C6BDA0; }
+.house-roof    { fill: #B9AF95; }
+.house-ground  { fill: #BCB294; }
 .house-label   {
   font-family: var(--data); font-size: 11px;
   letter-spacing: .18em; text-transform: uppercase;

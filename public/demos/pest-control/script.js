@@ -642,13 +642,18 @@
   ];
 
   var SWARM_CFG = {
-    dark:   { count: 26,  kinds: ['roach', 'spider', 'silverfish'], size: [0.9, 1.5], speed: [10, 26],
+    /* Act 1 is masked to the lens, so only the handful of insects
+       under the pointer are ever on screen at once. 26 across a whole
+       viewport meant the lens usually found nothing and the promise
+       in the copy went unpaid. Density has to be set against the
+       REVEALED area, not the canvas. */
+    dark:   { count: 95,  kinds: ['roach', 'spider', 'silverfish'], size: [0.9, 1.5], speed: [10, 26],
               ramp: function (p) { return 1; },
               speedScale: function (p) { return 1 + p * 9; } },      /* they scatter as you scroll */
     house:  { count: 90,  kinds: ['roach', 'ant', 'silverfish', 'spider'], size: [0.7, 1.15], speed: [12, 30],
               viewBox: HOUSE_VB, corridors: HOUSE_CORRIDORS,
               ramp: function (p) { return clamp(0.25 + p * 1.1, 0, 1); } },
-    cavity: { count: 44,  kinds: ['roach', 'ant', 'spider'], size: [1.4, 2.4], speed: [16, 40],
+    cavity: { count: 85,  kinds: ['roach', 'ant', 'spider'], size: [1.4, 2.4], speed: [16, 40],
               ramp: function (p) { return clamp(p * 2, 0, 1); } },
     below:  { count: 150, kinds: ['ant', 'termite', 'roach', 'silverfish'], size: [0.75, 1.3], speed: [14, 34],
               ramp: function (p) { return clamp(0.1 + p * 1.4, 0, 1); } },
@@ -788,22 +793,40 @@
 
   /* ---------- 6. split text ---------- */
 
+  /* Split into WORDS first, then letters inside each word.
+     Splitting straight to letters is the obvious implementation and it
+     is wrong: every letter becomes an inline-block, so the browser is
+     allowed to line-break between any two of them, and a headline
+     renders as "The w / all is / not e / mpty." The word wrapper is
+     nowrap, which puts the break opportunities back where language
+     expects them. */
   function split(el) {
     if (el.dataset.done) return [];
-    var text = el.textContent;
+    var text = el.textContent.trim().replace(/\s+/g, ' ');
     el.setAttribute('aria-label', text);
     el.textContent = '';
+
     var wrap = document.createElement('span');
     wrap.className = 'split';
     wrap.setAttribute('aria-hidden', 'true');
+
     var chars = [];
-    for (var i = 0; i < text.length; i++) {
-      var s = document.createElement('span');
-      s.className = 'ch';
-      s.textContent = text[i];
-      wrap.appendChild(s);
-      if (text[i] !== ' ') chars.push(s);
-    }
+    var tokens = text.split(' ');
+    tokens.forEach(function (token, ti) {
+      var word = document.createElement('span');
+      word.className = 'word';
+      for (var i = 0; i < token.length; i++) {
+        var s = document.createElement('span');
+        s.className = 'ch';
+        s.textContent = token[i];
+        word.appendChild(s);
+        chars.push(s);
+      }
+      wrap.appendChild(word);
+      /* a real space, so the line can break here and only here */
+      if (ti < tokens.length - 1) wrap.appendChild(document.createTextNode(' '));
+    });
+
     el.appendChild(wrap);
     el.dataset.done = '1';
     return chars;
@@ -982,11 +1005,15 @@
     tl.to(eyes, { opacity: 1, duration: 0.16, stagger: { each: 0.02, from: 'random' } }, 0.04);
     tl.to(eyes, { opacity: 0, duration: 0.1, stagger: { each: 0.012, from: 'random' } }, 0.44);
 
-    /* headline rises letter by letter */
-    tl.to(chars, {
-      yPercent: 0, opacity: 1, duration: 0.34,
-      stagger: { each: 0.006 }, ease: 'power3.out'
-    }, 0.06);
+    /* The ONLY headline on the page that is not scrubbed. Every other
+       act reveals its type as you scroll into it, but this one is the
+       thing you land on — tying it to scroll position means arriving
+       at a page with no headline on it and no way to know there is
+       one. It plays once, on load, and then gets out of the way. */
+    gsap.to(chars, {
+      yPercent: 0, opacity: 1, duration: 0.85,
+      stagger: { each: 0.014 }, ease: 'power3.out', delay: 0.35
+    });
 
     /* the scatter: swarm speed is a function of shot progress, and
        the whole reveal layer drifts back as the camera pulls off */
@@ -1015,8 +1042,12 @@
        the plate's live layout box on every refresh. */
     var org = function () { return originVB(housePlate, 1600, 900, 450, 474); };
 
+    /* Headlines land almost immediately, not a third of the way in.
+       The copy sits on a card that reserves its full height from the
+       first frame, so a late reveal is not "suspense" — it is a blank
+       panel with a hole in it. Read first, then animate. */
     gsap.set(chars, { yPercent: 110, opacity: 0 });
-    tl.to(chars, { yPercent: 0, opacity: 1, duration: 0.3, stagger: 0.008, ease: 'power3.out' }, 0.05);
+    tl.to(chars, { yPercent: 0, opacity: 1, duration: 0.16, stagger: 0.005, ease: 'power3.out' }, 0.01);
 
     /* Slow creep first. Cutting straight from rest into the push-in
        reads as a jump; the push has to accelerate out of something. */
@@ -1140,7 +1171,7 @@
 
     /* --- headline rises, then gets walked on --- */
     gsap.set(chars, { yPercent: 110, opacity: 0 });
-    tl.to(chars, { yPercent: 0, opacity: 1, duration: 0.28, stagger: 0.007, ease: 'power3.out' }, 0.1);
+    tl.to(chars, { yPercent: 0, opacity: 1, duration: 0.16, stagger: 0.005, ease: 'power3.out' }, 0.01);
     /* something lands on the text and it shakes. Random per letter,
        but seeded by index so the same scroll position shakes the same
        way both directions. */
@@ -1183,7 +1214,7 @@
 
     /* operator walks in */
     tl.to(op, { x: opX, opacity: 1, duration: 0.3, ease: 'power3.out' }, 0.02);
-    tl.to(chars, { yPercent: 0, opacity: 1, duration: 0.28, stagger: 0.008, ease: 'power3.out' }, 0.1);
+    tl.to(chars, { yPercent: 0, opacity: 1, duration: 0.16, stagger: 0.005, ease: 'power3.out' }, 0.01);
 
     /* the spray opens up */
     tl.to(spray, { scaleX: 1, opacity: 1, duration: 0.2, ease: 'power2.out' }, 0.3);
@@ -1332,7 +1363,7 @@
     var chars = split($('h2[data-split]', el));
 
     gsap.set(chars, { yPercent: 110, opacity: 0 });
-    tl.to(chars, { yPercent: 0, opacity: 1, duration: 0.28, stagger: 0.008, ease: 'power3.out' }, 0.42);
+    tl.to(chars, { yPercent: 0, opacity: 1, duration: 0.16, stagger: 0.005, ease: 'power3.out' }, 0.01);
 
     /* birds cross the frame on scrubbed paths */
     birds.forEach(function (b, i) {
@@ -1411,41 +1442,45 @@
     }).filter(Boolean);
 
     tl.to({}, {
-      duration: 0.55,
+      duration: 0.34,
       onUpdate: function () {
         var t = gsap.parseEase('power2.inOut')(this.progress());
         morphs.forEach(function (m) { m.fn(t); });
       }
-    }, 0.05);
+    }, 0.02);
 
     morphs.forEach(function (m) {
-      tl.to(m.node, { opacity: 1, duration: 0.4 }, 0.1);
+      tl.to(m.node, { opacity: 1, duration: 0.26 }, 0.04);
     });
 
     /* day arrives */
-    tl.to(night, { opacity: 0, duration: 0.5 }, 0.12);
-    tl.to(sky, { opacity: 1, duration: 0.5 }, 0.12);
-    tl.to(rays, { opacity: 1, duration: 0.3 }, 0.34);
+    tl.to(night, { opacity: 0, duration: 0.32 }, 0.06);
+    tl.to(sky, { opacity: 1, duration: 0.32 }, 0.06);
+    tl.to(rays, { opacity: 1, duration: 0.24 }, 0.22);
     tl.fromTo(rays, { rotation: -7, transformOrigin: '50% 0%' },
-                    { rotation: 5, duration: 0.7, ease: 'sine.inOut' }, 0.3);
+                    { rotation: 5, duration: 0.7, ease: 'sine.inOut' }, 0.22);
 
     /* windows light up */
-    tl.to(glass, { opacity: 1, duration: 0.28 }, 0.42);
+    tl.to(glass, { opacity: 1, duration: 0.24 }, 0.26);
 
-    /* grass grows from the roots, flowers open */
+    /* grass grows from the roots, flowers open.
+       Everything here used to start past the halfway mark, which left
+       the final act as a blank white rectangle for its whole first
+       half — the weakest thing on the page. The payoff has to be
+       arriving, not pending. */
     gsap.set(grass, { scaleY: 0, transformOrigin: '50% 100%' });
-    tl.to($('[data-grass]', el), { opacity: 1, duration: 0.05 }, 0.4);
-    tl.to(grass, { scaleY: 1, duration: 0.3, stagger: 0.012, ease: 'back.out(1.7)' }, 0.42);
+    tl.to($('[data-grass]', el), { opacity: 1, duration: 0.05 }, 0.24);
+    tl.to(grass, { scaleY: 1, duration: 0.26, stagger: 0.01, ease: 'back.out(1.7)' }, 0.26);
 
     gsap.set(blooms, { scale: 0, transformOrigin: '50% 100%' });
-    tl.to($('[data-blooms]', el), { opacity: 1, duration: 0.05 }, 0.5);
-    tl.to(blooms, { scale: 1, rotation: 0, duration: 0.3, stagger: 0.04, ease: 'back.out(2)' }, 0.52);
+    tl.to($('[data-blooms]', el), { opacity: 1, duration: 0.05 }, 0.3);
+    tl.to(blooms, { scale: 1, rotation: 0, duration: 0.28, stagger: 0.035, ease: 'back.out(2)' }, 0.32);
 
     /* headline + CTA */
     gsap.set(chars, { yPercent: 110, opacity: 0 });
     gsap.set(copy, { opacity: 0 });
-    tl.to(copy, { opacity: 1, duration: 0.1 }, 0.52);
-    tl.to(chars, { yPercent: 0, opacity: 1, duration: 0.3, stagger: 0.008, ease: 'power3.out' }, 0.54);
+    tl.to(copy, { opacity: 1, duration: 0.08 }, 0.2);
+    tl.to(chars, { yPercent: 0, opacity: 1, duration: 0.18, stagger: 0.005, ease: 'power3.out' }, 0.22);
 
     /* pollen replaces spores */
     tl.to({}, { duration: 1, onUpdate: function () {

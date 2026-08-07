@@ -318,11 +318,16 @@
       <canvas class="swarm" data-swarm="cavity" aria-hidden="true"></canvas>
     </div>
 
-    <div class="copy copy--right copy--bottom">
-      <p class="eyebrow eyebrow--tallow">Survey &middot; 01</p>
-      <h2 data-split>Behind every wall.</h2>
-      <p class="lede">A cavity is warm, dark, undisturbed and full of food.
-        From the inside, <strong>your house is not a building. It is terrain.</strong></p>
+    <!-- Bottom-LEFT, not bottom-right: the slate HUD lives in the
+         bottom-right corner and any copy placed there collides with
+         it. Every act in this file keeps that corner clear. -->
+    <div class="copy copy--left copy--bottom copy--card">
+      <div class="card">
+        <p class="eyebrow eyebrow--tallow">Survey &middot; 01</p>
+        <h2 data-split>Behind every wall.</h2>
+        <p class="lede">A cavity is warm, dark, undisturbed and full of food.
+          From the inside, <strong>your house is not a building. It is terrain.</strong></p>
+      </div>
     </div>
 
   </div>
@@ -803,12 +808,14 @@
       </svg>
     </div>
 
-    <div class="copy copy--right copy--bottom">
-      <p class="eyebrow eyebrow--tallow">Aftercare</p>
-      <h2 data-split>Then we give it back.</h2>
-      <p class="lede">A treated building is not a sterile one. Halcyon uses the
-        smallest effective dose, in the smallest possible place, so
-        <strong>everything that should be in your garden still is.</strong></p>
+    <div class="copy copy--left copy--bottom copy--card">
+      <div class="card">
+        <p class="eyebrow eyebrow--tallow">Aftercare</p>
+        <h2 data-split>Then we give it back.</h2>
+        <p class="lede">A treated building is not a sterile one. Halcyon uses the
+          smallest effective dose, in the smallest possible place, so
+          <strong>everything that should be in your garden still is.</strong></p>
+      </div>
     </div>
 
   </div>
@@ -922,14 +929,16 @@
       </svg>
     </div>
 
-    <div class="copy copy--center">
-      <p class="eyebrow">Halcyon</p>
-      <h2 data-split>The house belongs to you again.</h2>
-      <p class="lede" style="margin-left:auto;margin-right:auto">
-        Survey, targeted treatment, proofing, and a return visit to prove it held.
-        <strong>Covered across the US and UK.</strong></p>
-      <p><a class="cta" href="#outro" data-ripple data-live data-label="book">
-        Book an inspection <span class="cta__arrow" aria-hidden="true">&rarr;</span></a></p>
+    <div class="copy copy--center copy--card">
+      <div class="card">
+        <p class="eyebrow">Halcyon</p>
+        <h2 data-split>The house belongs to you again.</h2>
+        <p class="lede">
+          Survey, targeted treatment, proofing, and a return visit to prove it held.
+          <strong>Covered across the US and UK.</strong></p>
+        <p><a class="cta" href="#outro" data-ripple data-live data-label="book">
+          Book an inspection <span class="cta__arrow" aria-hidden="true">&rarr;</span></a></p>
+      </div>
     </div>
 
   </div>
