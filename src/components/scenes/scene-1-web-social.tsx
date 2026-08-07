@@ -15,7 +15,7 @@ const StudioScene = dynamic(
 
 const BULLETS = [
   "Custom Next.js, WordPress, Shopify builds",
-  "Social media management ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Instagram, TikTok, Facebook, LinkedIn",
+  "Social media management - Instagram, TikTok, Facebook, LinkedIn",
   "Content calendars, ad creatives, post scheduling",
 ];
 
