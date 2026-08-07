@@ -3,22 +3,12 @@
 import { useEffect, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import { Logo } from "@/components/branding/logo";
-import { WhatsappButton } from "@/components/ui/whatsapp-button";
 import { useScene } from "@/components/scenes/scene-controller";
 import { SceneNavHint } from "@/components/scenes/scene-nav-hint";
 import { isMuted, toggleMuted } from "@/lib/audio";
 import { setMusicMuted } from "@/lib/audio-music";
-import { whatsappUrl, type CtaTopic } from "@/lib/cta-messages";
 import { cn } from "@/lib/utils";
 
-const SCENE_TOPIC: CtaTopic[] = [
-  "general",       // 0 hero
-  "web-social",    // 1
-  "systems",       // 2
-  "dialer",        // 3
-  "cold-calling",  // 4
-  "general",       // 5 final
-];
 
 function formatIndex(n: number) {
   return n.toString().padStart(2, "0");
@@ -42,8 +32,6 @@ export function SiteChrome() {
     setMusicMuted(newVal);
   }
 
-  const topic = SCENE_TOPIC[currentScene] ?? "general";
-  const waHref = whatsappUrl(topic);
 
   return (
     <>
@@ -117,12 +105,7 @@ export function SiteChrome() {
         </div>
       </div>
 
-      {/* Bottom-right: floating WhatsApp FAB */}
-      <div className="pointer-events-none fixed bottom-6 right-6 z-50 sm:bottom-8 sm:right-8">
-        <div className="pointer-events-auto">
-          <WhatsappButton href={waHref} />
-        </div>
-      </div>
+
     </>
   );
 }
