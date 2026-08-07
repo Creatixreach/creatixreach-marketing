@@ -15,7 +15,7 @@ const StudioScene = dynamic(
 
 const BULLETS = [
   "Custom Next.js, WordPress, Shopify builds",
-  "Social media management â€” Instagram, TikTok, Facebook, LinkedIn",
+  "Social media management ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Instagram, TikTok, Facebook, LinkedIn",
   "Content calendars, ad creatives, post scheduling",
 ];
 
@@ -25,7 +25,7 @@ export function Scene1WebSocial() {
 
   return (
     <section className="relative w-full overflow-hidden bg-[#0a0814] text-brand-text-dark md:h-full">
-      {/* 3D backdrop â€” fixed full-viewport on mobile, absolute fill on desktop */}
+      {/* 3D backdrop ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â fixed full-viewport on mobile, absolute fill on desktop */}
       <div className="pointer-events-none fixed inset-0 z-0 md:absolute md:inset-0">
         {reduced ? (
           <StudioFallback className="h-full w-full" />
@@ -50,8 +50,8 @@ export function Scene1WebSocial() {
             topic="web-social"
             accent="bg-pink-400"
             extraLink={{
-              label: "See a live demo build",
-              href: "/demos/courier/index.html",
+              label: "See our live demo builds",
+              href: "/demos/index.html",
               external: true,
             }}
           />

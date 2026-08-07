@@ -127,25 +127,25 @@ export function SceneCopyPanel({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.95, ease: "easeOut" }}
-          className="mt-4 text-xs text-brand-muted-dark"
+          className="mt-4"
         >
           {extraLink.external ? (
             <a
               href={extraLink.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-white/70 underline-offset-4 transition-colors hover:text-white hover:underline"
+              className="inline-flex items-center gap-2 rounded-md border border-pink-400/40 bg-pink-400/10 px-4 py-2 text-sm font-medium text-pink-200 transition-colors hover:border-pink-400/70 hover:bg-pink-400/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
             >
               {extraLink.label}
-              <ArrowRight className="h-3 w-3" />
+              <ArrowRight className="h-4 w-4" />
             </a>
           ) : (
             <a
               href={extraLink.href}
-              className="inline-flex items-center gap-1 text-white/70 underline-offset-4 transition-colors hover:text-white hover:underline"
+              className="inline-flex items-center gap-2 rounded-md border border-pink-400/40 bg-pink-400/10 px-4 py-2 text-sm font-medium text-pink-200 transition-colors hover:border-pink-400/70 hover:bg-pink-400/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
             >
               {extraLink.label}
-              <ArrowRight className="h-3 w-3" />
+              <ArrowRight className="h-4 w-4" />
             </a>
           )}
         </motion.div>
